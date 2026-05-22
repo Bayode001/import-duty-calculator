@@ -32,5 +32,4 @@ export const calculateDuty = async (payload) => {
   }
 };
 
-const apiService = { calculateDuty };
-export default apiService;
+export default { calculateDuty };

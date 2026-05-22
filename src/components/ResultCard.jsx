@@ -157,7 +157,7 @@ const exportToPDF = () => {
   // TOTAL PAYABLE Box - same width as tables, right-aligned
   const boxHeight = 32;
   // eslint-disable-next-line no-unused-vars
-  // const boxWidth = col1Width + col2Width;  // Same as table width
+  const boxWidth = col1Width + col2Width;  // Same as table width
   doc.setFillColor(5, 150, 105);
   // Use the same left margin and total width as the tables
   doc.rect(leftMargin, currentY, tableWidth, boxHeight, 'F');
