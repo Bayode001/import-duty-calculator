@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
