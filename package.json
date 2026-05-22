@@ -23,10 +23,14 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "extends": [
+    "react-app"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "import/no-anonymous-default-export": "off"
+  }
+
   },
   "browserslist": {
     "production": [
