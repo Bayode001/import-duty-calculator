@@ -31,7 +31,7 @@ function AppContent() {
   const saveToHistory = (result) => {
   if (!result) return;
   
-  console.log('🔍 DEBUG - Raw result being saved (full):', result);
+  // console.log('🔍 DEBUG - Raw result being saved (full):', result);
   
   // Preserve ALL fields from the API response
   const historyItem = {
