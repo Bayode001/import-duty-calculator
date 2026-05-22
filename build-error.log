@@ -1,0 +1,6 @@
+
+> import-duty-calculator@0.1.0 build
+> DISABLE_ESLINT_PLUGIN=true react-scripts build
+
+'DISABLE_ESLINT_PLUGIN' is not recognized as an internal or external command,
+operable program or batch file.
