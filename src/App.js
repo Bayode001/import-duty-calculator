@@ -28,31 +28,47 @@ function AppContent() {
     }
   }, []);
 
-  const saveToHistory = (result) => {
-    if (!result) return;
-    
-    const historyItem = {
-      ...result,
-      total_payable: parseFloat(result.total_payable || 0),
-      fob_value: parseFloat(result.fob_value || 0),
-      fob_rate: parseFloat(result.fob_rate || 1),
-      cif_ngn: parseFloat(result.cif_ngn || 0),
-      import_duty: parseFloat(result.import_duty || 0),
-      surcharge: parseFloat(result.surcharge || 0),
-      fcs: parseFloat(result.fcs || 0),
-      etls: parseFloat(result.etls || 0),
-      levy: parseFloat(result.levy || 0),
-      vat_base: parseFloat(result.vat_base || 0),
-      vat: parseFloat(result.vat || 0),
-      duty_rate: parseFloat(result.duty_rate || 0),
-      freight_cost: parseFloat(result.freight_cost || 0),
-      insurance_cost: parseFloat(result.insurance_cost || 0)
-    };
-    
-    const newHistory = [historyItem, ...history].slice(0, 50);
-    setHistory(newHistory);
-    localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
+ const saveToHistory = (result) => {
+  if (!result) return;
+  
+  // Check if this exact calculation already exists (by HS code and total payable)
+  const isDuplicate = history.some(item => 
+    item.hs_code === result.hs_code && 
+    item.total_payable === result.total_payable &&
+    Math.abs(new Date(item.created_at) - new Date(result.created_at)) < 5000
+  );
+  
+  if (isDuplicate) {
+    console.log('Duplicate detected, not saving:', result.hs_code);
+    return;
+  }
+  
+  const historyItem = {
+    ...result,
+    id: result.id || Date.now().toString(),
+    created_at: result.created_at || new Date().toISOString(),
+    total_payable: parseFloat(result.total_payable || 0),
+    fob_value: parseFloat(result.fob_value || 0),
+    fob_rate: parseFloat(result.fob_rate || 1),
+    cif_ngn: parseFloat(result.cif_ngn || 0),
+    import_duty: parseFloat(result.import_duty || 0),
+    surcharge: parseFloat(result.surcharge || 0),
+    fcs: parseFloat(result.fcs || 0),
+    etls: parseFloat(result.etls || 0),
+    levy: parseFloat(result.levy || 0),
+    vat_base: parseFloat(result.vat_base || 0),
+    vat: parseFloat(result.vat || 0),
+    duty_rate: parseFloat(result.duty_rate || 0),
+    freight_cost: parseFloat(result.freight_cost || 0),
+    insurance_cost: parseFloat(result.insurance_cost || 0)
   };
+  
+  const newHistory = [historyItem, ...history].slice(0, 50);
+  setHistory(newHistory);
+  localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
+  console.log('Saved to history:', result.hs_code);
+};
+
 
   const loadCalculation = (item) => {
     if (!item) return;

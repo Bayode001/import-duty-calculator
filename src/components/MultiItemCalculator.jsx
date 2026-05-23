@@ -91,21 +91,27 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   };
 
   const addToCart = () => {
-    if (results.length > 0) {
-      // Save each result to history before adding to cart
-      results.forEach(item => {
-        if (item.result && onSaveToHistory) {
-          console.log('Saving to history from cart:', item.cetCode);
+  if (results.length > 0) {
+    // Save each UNIQUE result to history (prevent duplicates)
+    const savedHsCodes = new Set();
+    
+    results.forEach(item => {
+      if (item.result && item.result.hs_code && onSaveToHistory) {
+        // Only save if not already saved in this batch
+        if (!savedHsCodes.has(item.result.hs_code)) {
+          savedHsCodes.add(item.result.hs_code);
+          console.log('Saving to history from cart:', item.result.hs_code);
           onSaveToHistory(item.result);
         }
-      });
-      
-      onAddToCart(results);
-      alert(`${results.length} item(s) added to cart!`);
-    } else {
-      alert('No valid calculations to add. Please calculate items first.');
-    }
-  };
+      }
+    });
+    
+    onAddToCart(results);
+    alert(`${results.length} item(s) added to cart!`);
+  } else {
+    alert('No valid calculations to add. Please calculate items first.');
+  }
+};
 
   // Format number with commas
   const formatNumber = (num) => {
