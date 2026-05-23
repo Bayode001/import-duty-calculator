@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const MultiItemCalculator = ({ onCalculate, onAddToCart }) => {
+const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   const [items, setItems] = useState([
     { id: Date.now(), cetCode: '', fobAmount: '', freightAmount: '', insuranceAmount: 0, currency: 'USD', levyBasis: 'FOB' }
   ]);

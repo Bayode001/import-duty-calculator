@@ -168,7 +168,7 @@ function AppContent() {
         )}
         
         {activeTab === 'multi' && (
-          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart} />
+          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart} onSaveToHistory={saveToHistory} />
         )}
         
         {activeTab === 'cart' && (
