@@ -31,17 +31,21 @@ function AppContent() {
  const saveToHistory = (result) => {
   if (!result) return;
   
-  // Check if this exact calculation already exists (by HS code and total payable)
-  const isDuplicate = history.some(item => 
-    item.hs_code === result.hs_code && 
-    item.total_payable === result.total_payable &&
-    Math.abs(new Date(item.created_at) - new Date(result.created_at)) < 5000
-  );
+  // Create a unique key for this calculation
+  const uniqueKey = `${result.hs_code}_${result.total_payable}`;
   
-  if (isDuplicate) {
+  // Get existing saved keys from localStorage
+  const savedKeys = JSON.parse(localStorage.getItem('savedHistoryKeys') || '[]');
+  
+  // Check if already saved
+  if (savedKeys.includes(uniqueKey)) {
     console.log('Duplicate detected, not saving:', result.hs_code);
     return;
   }
+  
+  // Add this key to saved keys
+  savedKeys.push(uniqueKey);
+  localStorage.setItem('savedHistoryKeys', JSON.stringify(savedKeys));
   
   const historyItem = {
     ...result,
@@ -66,9 +70,8 @@ function AppContent() {
   const newHistory = [historyItem, ...history].slice(0, 50);
   setHistory(newHistory);
   localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
-  console.log('Saved to history:', result.hs_code);
+  console.log('Saved to history:', result.hs_code, 'Total:', result.total_payable);
 };
-
 
   const loadCalculation = (item) => {
     if (!item) return;
@@ -80,10 +83,11 @@ function AppContent() {
     }, 100);
   };
 
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem('dutyHistory');
-  };
+  cconst clearHistory = () => {
+  setHistory([]);
+  localStorage.removeItem('dutyHistory');
+  localStorage.removeItem('savedHistoryKeys');
+};
 
   const handleCalculate = async (payload) => {
     try {
