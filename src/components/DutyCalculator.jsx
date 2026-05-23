@@ -106,56 +106,35 @@ const DutyCalculator = ({ onCalculate }) => {
 
     console.log('=== HANDLE SUBMIT START ===');
     console.log('Payload:', payload);
-    console.log('onCalculate exists?', !!onCalculate);
 
     if (!payload.cetCode) {
-      console.log('ERROR: No cetCode');
       setError('Please enter an HS/CET Code');
       setLoading(false);
       return;
     }
 
     if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
-      console.log('ERROR: Invalid fobAmount');
       setError('Please enter a valid FOB Value');
       setLoading(false);
       return;
     }
 
-    let response;
+    // TEMPORARY: Force direct API call, bypass onCalculate
+    console.log('Calling calculateDuty directly (bypassing onCalculate)');
+    const response = await calculateDuty(payload);
+    console.log('calculateDuty response:', response);
     
-    if (onCalculate) {
-      console.log('Using onCalculate callback');
-      const resultData = await onCalculate(payload);
-      console.log('onCalculate resultData:', resultData);
-      if (resultData) {
-        setResult(resultData);
-        console.log('Result set from onCalculate');
-      } else {
-        console.log('onCalculate returned null/undefined');
-        setError('Calculation failed. Please try again.');
-      }
+    if (response.success) {
+      console.log('Setting result from API');
+      setResult(response.data);
     } else {
-      console.log('Calling calculateDuty directly');
-      response = await calculateDuty(payload);
-      console.log('calculateDuty response:', response);
-      console.log('response.success:', response.success);
-      console.log('response.data:', response.data);
-      console.log('response.error:', response.error);
-      
-      if (response.success) {
-        console.log('Setting result from API');
-        setResult(response.data);
-      } else {
-        console.log('Setting error from API');
-        setError(response.error || 'Calculation failed. Please try again.');
-      }
+      console.log('Setting error from API');
+      setError(response.error || 'Calculation failed. Please try again.');
     }
     
     console.log('=== HANDLE SUBMIT END ===');
     setLoading(false);
   };
-  
 
   const handleReset = () => {
     setFormData({
