@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://129.151.190.142:5678';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://129.151.190.142:5678/webhook/calculate-duty';
 const API_KEY = process.env.REACT_APP_API_KEY || '';
 
 const apiClient = axios.create({
@@ -14,10 +14,9 @@ const apiClient = axios.create({
 
 export const calculateDuty = async (payload) => {
   try {
-    const response = await apiClient.post('/webhook/calculate-duty', payload);
+    const response = await apiClient.post('', payload);
     console.log('Raw API response:', response.data);
     
-    // Check if response contains error
     if (response.data.error === "true" || response.data.error === true) {
       return { success: false, error: response.data.message || 'HS Code not found' };
     }
