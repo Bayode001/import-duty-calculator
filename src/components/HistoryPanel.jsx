@@ -72,7 +72,7 @@ const HistoryPanel = ({ history, onLoadCalculation, onClearHistory }) => {
                   <span className="history-date">{createdDate}</span>
                   <div className="history-item-actions">
   <                button onClick={() => {
-                   console.log('🔍 DEBUG - History item being loaded:', item);
+                   // console.log('🔍 DEBUG - History item being loaded:', item);
                    onLoadCalculation(item);
                    }} className="btn-load">
                     Load
