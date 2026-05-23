@@ -48,7 +48,10 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart }) => {
         user_id: null
       };
       
+      console.log('Calculating item:', item.cetCode);
       const result = await onCalculate(payload);
+      console.log('Result for', item.cetCode, ':', result?.total_payable);
+      
       if (result) {
         calculatedResults.push({
           ...item,
@@ -58,6 +61,7 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart }) => {
     }
   }
   
+  console.log('All results:', calculatedResults.length);
   setResults(calculatedResults);
   setCalculating(false);
 };
