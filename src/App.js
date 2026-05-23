@@ -83,7 +83,7 @@ function AppContent() {
     }, 100);
   };
 
-  cconst clearHistory = () => {
+  const clearHistory = () => {
   setHistory([]);
   localStorage.removeItem('dutyHistory');
   localStorage.removeItem('savedHistoryKeys');
