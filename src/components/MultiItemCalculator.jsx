@@ -57,6 +57,11 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart }) => {
           ...item,
           result: result
         });
+        
+        // Also save to history directly if onCalculate didn't
+        if (onSaveToHistory) {
+          onSaveToHistory(result);
+        }
       }
     }
   }
