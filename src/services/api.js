@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://129.151.190.142:5678/webhook/calculate-duty';
+const API_BASE_URL = 'https://nigeria-energy.duckdns.org/webhook/calculate-duty';
 
 export const calculateDuty = async (payload) => {
   console.log('📤 Sending request to:', API_BASE_URL);
