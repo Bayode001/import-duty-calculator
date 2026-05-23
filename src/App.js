@@ -80,62 +80,59 @@ function AppContent() {
   };
 
   const handleCalculate = async (payload) => {
+  console.log('🔍 handleCalculate START');
+  console.log('🔍 Payload:', payload);
+  
   try {
     const response = await calculateDuty(payload);
+    console.log('🔍 Raw response from calculateDuty:', response);
+    console.log('🔍 response.success:', response.success);
+    console.log('🔍 response.data:', response.data);
+    console.log('🔍 response.error:', response.error);
+    
     if (response.success && response.data) {
-      // Log the complete response to see what fields we have
-      console.log('🔍 DEBUG - Complete API response:', response.data);
+      console.log('🔍 Creating completeResult...');
       
-      // Create a complete history item with all fields
       const completeResult = {
-        // Basic info
         id: response.data.id || Date.now().toString(),
         created_at: new Date().toISOString(),
         hs_code: response.data.hs_code || payload.cetCode,
         tariff_description: response.data.tariff_description || '',
         user_id: payload.user_id || null,
-        
-        // Value components
         fob_value: payload.fobAmount,
         fob_currency: payload.currency,
         fob_rate: response.data.fob_rate || 1,
         cif_ngn: response.data.cif_ngn || 0,
-        
-        // Duty breakdown
         duty_rate: response.data.duty_rate || 0,
         import_duty: response.data.import_duty || 0,
         surcharge: response.data.surcharge || 0,
         fcs: response.data.fcs || 0,
         etls: response.data.etls || 0,
         levy: response.data.levy || 0,
-        
-        // VAT calculation
         vat_base: response.data.vat_base || 0,
         vat: response.data.vat || 0,
         vat_exempt: response.data.vat_exempt || false,
-        
-        // Totals
         total_payable: response.data.total_payable || response.data.total_customs_charges || 0,
-        
-        // Shipping costs
         freight_cost: payload.freightAmount || 0,
         insurance_cost: payload.insuranceAmount || 0,
-        
-        // Disclaimer
-        disclaimer: response.data.disclaimer || 'Advisory only. Final assessment by Nigeria Customs Service may differ.'
+        disclaimer: response.data.disclaimer || 'Advisory only.'
       };
       
-      console.log('🔍 DEBUG - Saving to history:', completeResult);
+      console.log('🔍 completeResult:', completeResult);
+      console.log('🔍 total_payable value:', completeResult.total_payable);
+      
       saveToHistory(completeResult);
+      console.log('🔍 handleCalculate END - returning result');
       return completeResult;
+    } else {
+      console.log('🔍 Response not successful, returning null');
+      return null;
     }
-    return null;
   } catch (error) {
-    console.error('Error in handleCalculate:', error);
+    console.error('🔍 Error in handleCalculate:', error);
     return null;
   }
 };
-
 
   const addToCart = (items) => {
     if (!items || !Array.isArray(items)) return;
