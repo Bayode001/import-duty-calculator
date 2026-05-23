@@ -67,10 +67,6 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
             result: result
           });
           
-          // Save to history
-          if (onSaveToHistory) {
-            onSaveToHistory(result);
-          }
         } else {
           failedItems.push(cleanedCetCode);
         }
