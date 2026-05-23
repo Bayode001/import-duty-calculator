@@ -32,42 +32,45 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart }) => {
   };
 
   const calculateAll = async () => {
-    setCalculating(true);
-    setResults([]);
-    const calculatedResults = [];
-    
-    for (const item of items) {
-      if (item.cetCode && item.fobAmount) {
-        const payload = {
-          cetCode: item.cetCode.trim(),
-          fobAmount: parseFloat(item.fobAmount),
-          currency: item.currency,
-          freightAmount: parseFloat(item.freightAmount) || 0,
-          insuranceAmount: parseFloat(item.insuranceAmount) || 0,
-          levyBasis: item.levyBasis,
-          user_id: null
-        };
-        
-        const result = await onCalculate(payload);
-        if (result) {
-          calculatedResults.push({
-            ...item,
-            result: result
-          });
-        }
+  setCalculating(true);
+  setResults([]);
+  const calculatedResults = [];
+  
+  for (const item of items) {
+    if (item.cetCode && item.fobAmount) {
+      const payload = {
+        cetCode: item.cetCode.trim(),
+        fobAmount: parseFloat(item.fobAmount),
+        currency: item.currency,
+        freightAmount: parseFloat(item.freightAmount) || 0,
+        insuranceAmount: parseFloat(item.insuranceAmount) || 0,
+        levyBasis: item.levyBasis,
+        user_id: null
+      };
+      
+      const result = await onCalculate(payload);
+      if (result) {
+        calculatedResults.push({
+          ...item,
+          result: result
+        });
       }
     }
-    
-    setResults(calculatedResults);
-    setCalculating(false);
-  };
+  }
+  
+  setResults(calculatedResults);
+  setCalculating(false);
+};
 
-  const addToCart = () => {
-    if (results.length > 0) {
-      onAddToCart(results);
-      alert(`${results.length} item(s) added to cart!`);
-    }
-  };
+const addToCart = () => {
+  if (results.length > 0) {
+    // The results already contain the calculated data
+    // They should already be in history because onCalculate saves them
+    onAddToCart(results);
+    alert(`${results.length} item(s) added to cart!`);
+  }
+};
+
 
   // Format number with commas
   const formatNumber = (num) => {
