@@ -9,6 +9,17 @@ const CartSummary = ({ cart, onRemoveItem, onClearCart }) => {
     return isNaN(num) ? 0 : num;
   };
 
+  // Add this function to save cart items to history
+const saveCartToHistory = () => {
+  cart.forEach(item => {
+    const result = item.result;
+    if (result && onSaveToHistory) {
+      onSaveToHistory(result);
+    }
+  });
+  alert(`${cart.length} item(s) saved to history!`);
+};
+
   const formatCurrency = (amount) => {
     const num = parseNum(amount);
     return new Intl.NumberFormat('en-NG', {
