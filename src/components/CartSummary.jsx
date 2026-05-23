@@ -2,7 +2,7 @@ import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const CartSummary = ({ cart, onRemoveItem, onClearCart }) => {
+const CartSummary = ({ cart, onRemoveItem, onClearCart, onSaveToHistory }) => {
   const parseNum = (val) => {
     if (val === undefined || val === null) return 0;
     const num = typeof val === 'string' ? parseFloat(val) : val;
@@ -240,6 +240,9 @@ const saveCartToHistory = () => {
       <div className="cart-header">
         <h3>🛒 Cart Summary ({cart.length} items)</h3>
         <div className="cart-actions">
+          <button onClick={saveCartToHistory} className="btn-save-history">
+            💾 Save All to History
+          </button>
           <button onClick={exportCombinedPDF} className="btn-checkout">
             📄 Export Combined PDF Report
           </button>
