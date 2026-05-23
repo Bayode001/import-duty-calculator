@@ -203,18 +203,12 @@ ${'='.repeat(50)}`;
     URL.revokeObjectURL(url);
   };
 
-const response = await calculateDuty(payload);
-console.log('=== DEBUG ===');
-console.log('Response success:', response.success);
-console.log('Response data:', response.data);
-console.log('Total payable:', response.data?.total_payable);
+console.log('=== RENDER DEBUG ===');
+console.log('Loading:', loading);
+console.log('Error:', error);
+console.log('Result object:', result);
+console.log('Result total_payable:', result?.total_payable);
 
-if (response.success) {
-  setResult(response.data);
-  console.log('Result set in state');
-} else {
-  setError(response.error || 'Calculation failed. Please try again.');
-}
 
   return (
     <div className="calculator-container">
