@@ -1,5 +1,3 @@
-console.log('ResultCard received data:', data);
-console.log('Total payable from props:', data?.total_payable);
 import React from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
