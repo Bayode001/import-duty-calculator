@@ -10,21 +10,26 @@ const HistoryPanel = ({ history, onLoadCalculation, onClearHistory }) => {
       return;
     }
 
-    try {
-      const filtered = history.filter(item => {
-        const hsCode = item?.hs_code || '';
-        const description = item?.tariff_description || '';
-        const searchLower = searchTerm.toLowerCase();
-        
-        return hsCode.toLowerCase().includes(searchLower) || 
-               description.toLowerCase().includes(searchLower);
-      });
-      setFilteredHistory(filtered);
-    } catch (error) {
-      console.error('Error filtering history:', error);
-      setFilteredHistory([]);
-    }
+    const filtered = history.filter(item => {
+      const hsCode = item.hs_code || '';
+      const description = item.tariff_description || '';
+      const searchLower = searchTerm.toLowerCase();
+      
+      return hsCode.toLowerCase().includes(searchLower) || 
+             description.toLowerCase().includes(searchLower);
+    });
+    setFilteredHistory(filtered);
   }, [searchTerm, history]);
+
+  const formatCurrency = (amount) => {
+    const num = parseFloat(amount) || 0;
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(num);
+  };
 
   if (!history || history.length === 0) {
     return (
@@ -66,34 +71,27 @@ const HistoryPanel = ({ history, onLoadCalculation, onClearHistory }) => {
       ) : (
         <div className="history-list">
           {filteredHistory.map((item, index) => {
-            try {
-              const hsCode = item?.hs_code || 'N/A';
-              const description = item?.tariff_description || 'No description';
-              const totalPayable = parseFloat(item?.total_payable || 0);
-              const createdDate = item?.created_at ? new Date(item.created_at).toLocaleString() : 'Unknown date';
-              
-              return (
-                <div key={item?.id || index} className="history-item">
-                  <div className="history-item-header">
-                    <span className="history-date">{createdDate}</span>
-                    <div className="history-item-actions">
-                      <button onClick={() => onLoadCalculation(item)} className="btn-load">
-                        Load
-                      </button>
-                    </div>
-                  </div>
-                  <div className="history-item-details">
-                    <span className="history-hs">HS Code: {hsCode}</span>
-                    <span className="history-desc">{description.substring(0, 50)}...</span>
-                    <span className="history-total">₦{totalPayable.toLocaleString()}</span>
+            const createdDate = item.created_at ? new Date(item.created_at).toLocaleString() : 'Unknown date';
+            const totalPayable = parseFloat(item.total_payable) || 0;
+            
+            return (
+              <div key={item.id || index} className="history-item">
+                <div className="history-item-header">
+                  <span className="history-date">{createdDate}</span>
+                  <div className="history-item-actions">
+                    <button onClick={() => onLoadCalculation(item)} className="btn-load">
+                      Load
+                    </button>
                   </div>
                 </div>
-              );
-            } catch (error) {
-              console.error('Error rendering history item:', error);
-              return null;
-            }
-          }).filter(item => item !== null)}
+                <div className="history-item-details">
+                  <span className="history-hs">HS Code: {item.hs_code}</span>
+                  <span className="history-desc">{item.tariff_description?.substring(0, 50) || 'No description'}</span>
+                  <span className="history-total">{formatCurrency(totalPayable)}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
