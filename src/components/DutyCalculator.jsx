@@ -133,6 +133,7 @@ const DutyCalculator = ({ onCalculate }) => {
     setLoading(false);
   };
 
+  
   const handleReset = () => {
     setFormData({
       cetCode: '',
