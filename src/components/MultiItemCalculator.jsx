@@ -37,79 +37,66 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   };
 
   const calculateAll = async () => {
-    setCalculating(true);
-    setResults([]);
-    const calculatedResults = [];
-    let failedItems = [];
+  setCalculating(true);
+  setResults([]);
+  const calculatedResults = [];
+  
+  for (const item of items) {
+    const cleanedCetCode = item.cetCode.trim().replace(/[`'"]/g, '');
     
-    for (const item of items) {
-      const cleanedCetCode = item.cetCode.trim().replace(/[`'"]/g, '');
+    if (cleanedCetCode && item.fobAmount) {
+      const payload = {
+        cetCode: cleanedCetCode,
+        fobAmount: parseFloat(item.fobAmount),
+        currency: item.currency,
+        freightAmount: parseFloat(item.freightAmount) || 0,
+        insuranceAmount: parseFloat(item.insuranceAmount) || 0,
+        levyBasis: item.levyBasis,
+        user_id: null
+      };
       
-      if (cleanedCetCode && item.fobAmount) {
-        const payload = {
+      console.log('Calculating item:', cleanedCetCode);
+      const result = await onCalculate(payload);
+      console.log('Result for', cleanedCetCode, ':', result);
+      
+      if (result) {
+        calculatedResults.push({
+          ...item,
           cetCode: cleanedCetCode,
-          fobAmount: parseFloat(item.fobAmount),
-          currency: item.currency,
-          freightAmount: parseFloat(item.freightAmount) || 0,
-          insuranceAmount: parseFloat(item.insuranceAmount) || 0,
-          levyBasis: item.levyBasis,
-          user_id: null
-        };
-        
-        console.log('Calculating item:', cleanedCetCode);
-        const result = await onCalculate(payload);
-        console.log('Result for', cleanedCetCode, ':', result?.total_payable);
-        
-        if (result) {
-          calculatedResults.push({
-            ...item,
-            cetCode: cleanedCetCode,
-            result: result
-          });
-          
-        } else {
-          failedItems.push(cleanedCetCode);
-        }
-      } else if (cleanedCetCode && !item.fobAmount) {
-        failedItems.push(`${cleanedCetCode} (missing FOB value)`);
+          result: result
+        });
       }
     }
-    
-    console.log('Valid results:', calculatedResults.length);
-    console.log('Failed items:', failedItems);
-    
-    setResults(calculatedResults);
-    setCalculating(false);
-    
-    if (failedItems.length > 0) {
-      alert(`Failed to calculate: ${failedItems.join(', ')}\n\nPlease verify HS codes and FOB values.`);
-    }
-    
-    if (calculatedResults.length > 0) {
-      alert(`${calculatedResults.length} item(s) calculated and saved to history!`);
-    }
-  };
+  }
+  
+  console.log('All calculated results:', calculatedResults);
+  setResults(calculatedResults);
+  setCalculating(false);
+  alert(`${calculatedResults.length} item(s) calculated! Click "Add to Cart" to save to history.`);
+};
 
-  const addToCart = () => {
-  if (results.length > 0) {
-    // Save each UNIQUE result to history (prevent duplicates)
-    const savedHsCodes = new Set();
-    
-    results.forEach(item => {
-      if (item.result && item.result.hs_code && onSaveToHistory) {
-        // Only save if not already saved in this batch
-        if (!savedHsCodes.has(item.result.hs_code)) {
-          savedHsCodes.add(item.result.hs_code);
-          console.log('Saving to history from cart:', item.result.hs_code);
-          onSaveToHistory(item.result);
-        }
+ const addToCart = () => {
+  console.log('addToCart called. Results length:', results.length);
+  console.log('Results:', results);
+  console.log('onSaveToHistory exists?', !!onSaveToHistory);
+  
+  if (results.length > 0 && onSaveToHistory) {
+    results.forEach((item, index) => {
+      console.log(`Item ${index + 1}:`, item.cetCode, 'Result:', item.result);
+      if (item.result && item.result.hs_code) {
+        console.log(`Calling onSaveToHistory for ${item.result.hs_code}`);
+        onSaveToHistory(item.result);
+      } else {
+        console.log(`No valid result for ${item.cetCode}`);
       }
     });
     
     onAddToCart(results);
     alert(`${results.length} item(s) added to cart!`);
   } else {
-    alert('No valid calculations to add. Please calculate items first.');
+    console.log('Cannot add to cart - no results or no onSaveToHistory');
+    if (results.length === 0) alert('No valid calculations to add. Please calculate items first.');
+    if (!onSaveToHistory) alert('Save to history function not available');
   }
 };
 
