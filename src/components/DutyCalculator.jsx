@@ -39,12 +39,12 @@ const DutyCalculator = ({ onCalculate }) => {
     if (listenerSet.current) return;
     listenerSet.current = true;
     
-    console.log('🔍 DEBUG - Setting up persistent event listener');
+    //console.log('🔍 DEBUG - Setting up persistent event listener');
     
     const handleLoadCalculation = (event) => {
-      console.log('🔍 DEBUG - loadCalculation event received!', event);
+      //console.log('🔍 DEBUG - loadCalculation event received!', event);
       const item = event.detail;
-      console.log('🔍 DEBUG - Item detail:', item);
+      //console.log('🔍 DEBUG - Item detail:', item);
       
       if (item) {
         console.log('🔍 DEBUG - Setting form data with:', {
@@ -76,7 +76,6 @@ const DutyCalculator = ({ onCalculate }) => {
     window.addEventListener('loadCalculation', handleLoadCalculation);
     
     return () => {
-      console.log('🔍 DEBUG - Cleaning up event listener on unmount');
       window.removeEventListener('loadCalculation', handleLoadCalculation);
       listenerSet.current = false;
     };
@@ -104,9 +103,7 @@ const DutyCalculator = ({ onCalculate }) => {
       user_id: formData.userId || null
     };
 
-    console.log('=== HANDLE SUBMIT START ===');
-    console.log('Payload:', payload);
-
+    
     if (!payload.cetCode) {
       setError('Please enter an HS/CET Code');
       setLoading(false);
@@ -120,19 +117,19 @@ const DutyCalculator = ({ onCalculate }) => {
     }
 
     // TEMPORARY: Force direct API call, bypass onCalculate
-    console.log('Calling calculateDuty directly (bypassing onCalculate)');
+    //console.log('Calling calculateDuty directly (bypassing onCalculate)');
     const response = await calculateDuty(payload);
-    console.log('calculateDuty response:', response);
+    //console.log('calculateDuty response:', response);
     
     if (response.success) {
-      console.log('Setting result from API');
+     // console.log('Setting result from API');
       setResult(response.data);
     } else {
-      console.log('Setting error from API');
+      //console.log('Setting error from API');
       setError(response.error || 'Calculation failed. Please try again.');
     }
     
-    console.log('=== HANDLE SUBMIT END ===');
+   // console.log('=== HANDLE SUBMIT END ===');
     setLoading(false);
   };
 
@@ -200,13 +197,6 @@ ${'='.repeat(50)}`;
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
-console.log('=== RENDER DEBUG ===');
-console.log('Loading:', loading);
-console.log('Error:', error);
-console.log('Result object:', result);
-console.log('Result total_payable:', result?.total_payable);
-
 
   return (
     <div className="calculator-container">

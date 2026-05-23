@@ -1,9 +1,7 @@
 const API_BASE_URL = 'https://nigeria-energy.duckdns.org/webhook/calculate-duty';
 
 export const calculateDuty = async (payload) => {
-  console.log('📤 Sending request to:', API_BASE_URL);
-  console.log('📦 Payload:', payload);
-  
+    
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
@@ -12,17 +10,12 @@ export const calculateDuty = async (payload) => {
       },
       body: JSON.stringify(payload)
     });
-    
-    console.log('📥 Response status:', response.status);
-    console.log('📥 Response ok:', response.ok);
-    
+     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
-    console.log('✅ Success! Data received:', data);
-    console.log('💰 Total payable:', data.total_payable);
     
     return { success: true, data: data };
   } catch (error) {

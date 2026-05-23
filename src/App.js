@@ -31,7 +31,6 @@ function AppContent() {
   const saveToHistory = (result) => {
   if (!result) return;
   
-  // console.log('🔍 DEBUG - Raw result being saved (full):', result);
   
   // Preserve ALL fields from the API response
   const historyItem = {
@@ -53,8 +52,6 @@ function AppContent() {
     insurance_cost: parseFloat(result.insurance_cost || 0)
   };
   
-  console.log('🔍 DEBUG - History item saved:', historyItem);
-  
   const newHistory = [historyItem, ...history].slice(0, 50);
   setHistory(newHistory);
   localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
@@ -62,12 +59,10 @@ function AppContent() {
 
   const loadCalculation = (item) => {
   if (!item) return;
-  console.log('🔍 DEBUG - loadCalculation called with:', item);
   
   setActiveTab('calculator');
   
   setTimeout(() => {
-    console.log('🔍 DEBUG - Dispatching loadCalculation event with full item');
     window.dispatchEvent(new CustomEvent('loadCalculation', { 
       detail: item  // Pass the entire item, not a subset
     }));
@@ -80,18 +75,11 @@ function AppContent() {
   };
 
   const handleCalculate = async (payload) => {
-  console.log('🔍 handleCalculate START');
-  console.log('🔍 Payload:', payload);
-  
+ 
   try {
     const response = await calculateDuty(payload);
-    console.log('🔍 Raw response from calculateDuty:', response);
-    console.log('🔍 response.success:', response.success);
-    console.log('🔍 response.data:', response.data);
-    console.log('🔍 response.error:', response.error);
     
     if (response.success && response.data) {
-      console.log('🔍 Creating completeResult...');
       
       const completeResult = {
         id: response.data.id || Date.now().toString(),
@@ -118,18 +106,12 @@ function AppContent() {
         disclaimer: response.data.disclaimer || 'Advisory only.'
       };
       
-      console.log('🔍 completeResult:', completeResult);
-      console.log('🔍 total_payable value:', completeResult.total_payable);
-      
       saveToHistory(completeResult);
-      console.log('🔍 handleCalculate END - returning result');
       return completeResult;
     } else {
-      console.log('🔍 Response not successful, returning null');
       return null;
     }
   } catch (error) {
-    console.error('🔍 Error in handleCalculate:', error);
     return null;
   }
 };
