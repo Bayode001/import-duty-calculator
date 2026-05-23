@@ -88,50 +88,58 @@ const DutyCalculator = ({ onCalculate }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setResult(null);
 
-    const payload = {
-      cetCode: formData.cetCode.trim(),
-      fobAmount: parseFloat(formData.fobAmount),
-      currency: formData.currency,
-      freightAmount: parseFloat(formData.freightAmount) || 0,
-      insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
-      levyBasis: formData.levyBasis,
-      user_id: formData.userId || null
-    };
-
-    
-    if (!payload.cetCode) {
-      setError('Please enter an HS/CET Code');
-      setLoading(false);
-      return;
-    }
-
-    if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
-      setError('Please enter a valid FOB Value');
-      setLoading(false);
-      return;
-    }
-
-    // TEMPORARY: Force direct API call, bypass onCalculate
-    //console.log('Calling calculateDuty directly (bypassing onCalculate)');
-    const response = await calculateDuty(payload);
-    //console.log('calculateDuty response:', response);
-    
-    if (response.success) {
-     // console.log('Setting result from API');
-      setResult(response.data);
-    } else {
-      //console.log('Setting error from API');
-      setError(response.error || 'Calculation failed. Please try again.');
-    }
-    
-   // console.log('=== HANDLE SUBMIT END ===');
-    setLoading(false);
+  const payload = {
+    cetCode: formData.cetCode.trim(),
+    fobAmount: parseFloat(formData.fobAmount),
+    currency: formData.currency,
+    freightAmount: parseFloat(formData.freightAmount) || 0,
+    insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
+    levyBasis: formData.levyBasis,
+    user_id: formData.userId || null
   };
+
+  if (!payload.cetCode) {
+    setError('Please enter an HS/CET Code');
+    setLoading(false);
+    return;
+  }
+
+  if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
+    setError('Please enter a valid FOB Value');
+    setLoading(false);
+    return;
+  }
+
+  try {
+    let response;
+    
+    if (onCalculate) {
+      const resultData = await onCalculate(payload);
+      if (resultData) {
+        setResult(resultData);
+      } else {
+        setError('Calculation failed. Please try again.');
+      }
+    } else {
+      response = await calculateDuty(payload);
+      if (response.success) {
+        setResult(response.data);
+      } else {
+        setError(response.error || 'Calculation failed. Please try again.');
+      }
+    }
+  } catch (error) {
+    console.error('Calculation error:', error);
+    setError('An unexpected error occurred');
+  }
+  
+  setLoading(false);
+};
 
   
   const handleReset = () => {
