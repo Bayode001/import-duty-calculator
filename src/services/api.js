@@ -11,6 +11,7 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
     ...(API_KEY && { 'X-API-Key': API_KEY })
   },
+  withCredentials: true, 
   timeout: 30000
 });
 
