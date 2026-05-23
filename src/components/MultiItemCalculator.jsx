@@ -73,13 +73,18 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
 
 const addToCart = () => {
   if (results.length > 0) {
-    // The results already contain the calculated data
-    // They should already be in history because onCalculate saves them
+    // Save each result to history before adding to cart
+    results.forEach(item => {
+      if (item.result && onSaveToHistory) {
+        console.log('Saving to history:', item.cetCode);
+        onSaveToHistory(item.result);
+      }
+    });
+    
     onAddToCart(results);
-    alert(`${results.length} item(s) added to cart!`);
+    alert(`${results.length} item(s) added to cart and saved to history!`);
   }
 };
-
 
   // Format number with commas
   const formatNumber = (num) => {

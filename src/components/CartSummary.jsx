@@ -10,15 +10,26 @@ const CartSummary = ({ cart, onRemoveItem, onClearCart, onSaveToHistory }) => {
   };
 
   // Add this function to save cart items to history
-const saveCartToHistory = () => {
-  cart.forEach(item => {
-    const result = item.result;
-    if (result && onSaveToHistory) {
-      onSaveToHistory(result);
+ const saveCartToHistory = () => {
+    if (cart.length === 0) {
+      alert('Cart is empty');
+      return;
     }
-  });
-  alert(`${cart.length} item(s) saved to history!`);
-};
+    
+    if (onSaveToHistory) {
+      let savedCount = 0;
+      cart.forEach(item => {
+        const result = item.result || item;
+        if (result && result.hs_code) {
+          onSaveToHistory(result);
+          savedCount++;
+        }
+      });
+      alert(`${savedCount} item(s) saved to history!`);
+    } else {
+      alert('Save to history function not available');
+    }
+  };
 
   const formatCurrency = (amount) => {
     const num = parseNum(amount);

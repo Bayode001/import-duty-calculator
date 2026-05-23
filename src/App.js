@@ -144,11 +144,11 @@ function AppContent() {
         )}
         
         {activeTab === 'multi' && (
-          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart} />
+          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart}  onSaveToHistory={saveToHistory} />
         )}
         
         {activeTab === 'cart' && (
-          <CartSummary cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} />
+          <CartSummary cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} onSaveToHistory={saveToHistory} />
         )}
         
         {activeTab === 'history' && (
