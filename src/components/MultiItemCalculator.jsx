@@ -26,65 +26,90 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   };
 
   const updateItem = (id, field, value) => {
+    // Clean HS code input - remove backticks, quotes, and special characters
+    let cleanedValue = value;
+    if (field === 'cetCode') {
+      cleanedValue = value.replace(/[`'"]/g, '').trim();
+    }
     setItems(items.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
+      item.id === id ? { ...item, [field]: cleanedValue } : item
     ));
   };
 
   const calculateAll = async () => {
-  setCalculating(true);
-  setResults([]);
-  const calculatedResults = [];
-  
-  for (const item of items) {
-    if (item.cetCode && item.fobAmount) {
-      const payload = {
-        cetCode: item.cetCode.trim(),
-        fobAmount: parseFloat(item.fobAmount),
-        currency: item.currency,
-        freightAmount: parseFloat(item.freightAmount) || 0,
-        insuranceAmount: parseFloat(item.insuranceAmount) || 0,
-        levyBasis: item.levyBasis,
-        user_id: null
-      };
+    setCalculating(true);
+    setResults([]);
+    const calculatedResults = [];
+    let failedItems = [];
+    
+    for (const item of items) {
+      const cleanedCetCode = item.cetCode.trim().replace(/[`'"]/g, '');
       
-      console.log('Calculating item:', item.cetCode);
-      const result = await onCalculate(payload);
-      console.log('Result for', item.cetCode, ':', result?.total_payable);
-      
-      if (result) {
-        calculatedResults.push({
-          ...item,
-          result: result
-        });
+      if (cleanedCetCode && item.fobAmount) {
+        const payload = {
+          cetCode: cleanedCetCode,
+          fobAmount: parseFloat(item.fobAmount),
+          currency: item.currency,
+          freightAmount: parseFloat(item.freightAmount) || 0,
+          insuranceAmount: parseFloat(item.insuranceAmount) || 0,
+          levyBasis: item.levyBasis,
+          user_id: null
+        };
         
-        // Also save to history directly if onCalculate didn't
-        if (onSaveToHistory) {
-          onSaveToHistory(result);
+        console.log('Calculating item:', cleanedCetCode);
+        const result = await onCalculate(payload);
+        console.log('Result for', cleanedCetCode, ':', result?.total_payable);
+        
+        if (result) {
+          calculatedResults.push({
+            ...item,
+            cetCode: cleanedCetCode,
+            result: result
+          });
+          
+          // Save to history
+          if (onSaveToHistory) {
+            onSaveToHistory(result);
+          }
+        } else {
+          failedItems.push(cleanedCetCode);
         }
+      } else if (cleanedCetCode && !item.fobAmount) {
+        failedItems.push(`${cleanedCetCode} (missing FOB value)`);
       }
     }
-  }
-  
-  console.log('All results:', calculatedResults.length);
-  setResults(calculatedResults);
-  setCalculating(false);
-};
-
-const addToCart = () => {
-  if (results.length > 0) {
-    // Save each result to history before adding to cart
-    results.forEach(item => {
-      if (item.result && onSaveToHistory) {
-        console.log('Saving to history:', item.cetCode);
-        onSaveToHistory(item.result);
-      }
-    });
     
-    onAddToCart(results);
-    alert(`${results.length} item(s) added to cart and saved to history!`);
-  }
-};
+    console.log('Valid results:', calculatedResults.length);
+    console.log('Failed items:', failedItems);
+    
+    setResults(calculatedResults);
+    setCalculating(false);
+    
+    if (failedItems.length > 0) {
+      alert(`Failed to calculate: ${failedItems.join(', ')}\n\nPlease verify HS codes and FOB values.`);
+    }
+    
+    if (calculatedResults.length > 0) {
+      alert(`${calculatedResults.length} item(s) calculated and saved to history!`);
+    }
+  };
+
+  const addToCart = () => {
+    if (results.length > 0) {
+      // Save each result to history before adding to cart
+      results.forEach(item => {
+        if (item.result && onSaveToHistory) {
+          console.log('Saving to history from cart:', item.cetCode);
+          onSaveToHistory(item.result);
+        }
+      });
+      
+      onAddToCart(results);
+      alert(`${results.length} item(s) added to cart!`);
+    } else {
+      alert('No valid calculations to add. Please calculate items first.');
+    }
+  };
 
   // Format number with commas
   const formatNumber = (num) => {
