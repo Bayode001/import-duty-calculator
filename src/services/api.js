@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://129.151.190.142:5678/webhook/calculate-duty';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://nigeria-energy.duckdns.org/webhook/calculate-duty';
 const API_KEY = process.env.REACT_APP_API_KEY || '';
 
 const apiClient = axios.create({
