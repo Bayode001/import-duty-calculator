@@ -6,7 +6,6 @@ import CartSummary from './components/CartSummary';
 import LoginModal from './components/LoginModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { calculateDuty } from './services/api';
-import APIKeyManager from './components/APIKeyManager';
 import './App.css';
 
 function AppContent() {
@@ -186,9 +185,6 @@ const addToCart = (items) => {
         <button className={activeTab === 'history' ? 'tab-active' : 'tab'} onClick={() => setActiveTab('history')}>
           📜 History ({history.length})
         </button>
-        <button className={activeTab === 'api-keys' ? 'tab-active' : 'tab'} onClick={() => setActiveTab('api-keys')}>
-          🔑 API Keys
-        </button>
       </div>
       
       <main className="app-main">
@@ -210,9 +206,6 @@ const addToCart = (items) => {
             onLoadCalculation={loadCalculation} 
             onClearHistory={clearHistory} 
           />
-        )}
-        {activeTab === 'api-keys' && (
-         <APIKeyManager />
         )}
       </main>
       
