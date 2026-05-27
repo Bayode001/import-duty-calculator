@@ -37,18 +37,6 @@ function AppContent() {
 }, []);
 
 
-// Handle successful login
-const handleLoginSuccess = (userData) => {
-  setUser(userData);
-};
-
-// Handle logout
-const handleLogout = () => {
-  localStorage.removeItem('user');
-  localStorage.removeItem('sessionToken');
-  setUser(null);
-};
-
 
  // Track pending saves to prevent duplicates
 let pendingSaves = new Set();
