@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
-const LoginModal = ({ onClose, onLoginSuccess }) => {
+const LoginModal = ({ onClose }) => {
+  const { register, login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,34 +15,17 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
     setLoading(true);
     setError('');
     
-    const endpoint = isLogin ? '/webhook/auth/login' : '/webhook/auth/register';
-    const payload = isLogin ? { email, password } : { email, password, full_name: fullName };
+    let result;
+    if (isLogin) {
+      result = await login(email, password);
+    } else {
+      result = await register(email, password, fullName);
+    }
     
-    try {
-      const response = await fetch(`https://nigeria-energy.duckdns.org${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        // Store authentication data
-        localStorage.setItem('sessionToken', data.sessionToken);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Call the success callback
-        if (onLoginSuccess) {
-          onLoginSuccess(data.user);
-        }
-        onClose();
-      } else {
-        setError(data.message || 'Authentication failed');
-      }
-    } catch (err) {
-      console.error('Auth error:', err);
-      setError('Network error. Please try again.');
+    if (result.success) {
+      onClose();
+    } else {
+      setError(result.error || 'Authentication failed');
     }
     setLoading(false);
   };
