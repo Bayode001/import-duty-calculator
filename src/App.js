@@ -34,64 +34,45 @@ let pendingSaves = new Set();
 const saveToHistory = (result) => {
   if (!result) return;
   
-  // Create a unique key for this calculation
-  const uniqueKey = `${result.hs_code}_${result.total_payable}`;
+  console.log('Saving to history:', result.hs_code, 'Total:', result.total_payable);
   
-  // Check if this exact calculation is already in history or pending
-  const alreadyInHistory = history.some(item => 
-    item.hs_code === result.hs_code && 
-    Math.abs(parseFloat(item.total_payable) - parseFloat(result.total_payable)) < 1
-  );
+  const historyItem = {
+    ...result,
+    id: result.id || Date.now().toString(),
+    created_at: result.created_at || new Date().toISOString(),
+    total_payable: parseFloat(result.total_payable || 0),
+    fob_value: parseFloat(result.fob_value || 0),
+    fob_rate: parseFloat(result.fob_rate || 1),
+    cif_ngn: parseFloat(result.cif_ngn || 0),
+    import_duty: parseFloat(result.import_duty || 0),
+    surcharge: parseFloat(result.surcharge || 0),
+    fcs: parseFloat(result.fcs || 0),
+    etls: parseFloat(result.etls || 0),
+    levy: parseFloat(result.levy || 0),
+    vat_base: parseFloat(result.vat_base || 0),
+    vat: parseFloat(result.vat || 0),
+    duty_rate: parseFloat(result.duty_rate || 0),
+    freight_cost: parseFloat(result.freight_cost || 0),
+    insurance_cost: parseFloat(result.insurance_cost || 0)
+  };
   
-  if (alreadyInHistory || pendingSaves.has(uniqueKey)) {
-    console.log('Duplicate detected, not saving:', result.hs_code);
-    return;
-  }
-  
-  // Mark as pending
-  pendingSaves.add(uniqueKey);
-  
-  // Use setTimeout to allow state to settle
-  setTimeout(() => {
-    const historyItem = {
-      ...result,
-      id: result.id || Date.now().toString(),
-      created_at: result.created_at || new Date().toISOString(),
-      total_payable: parseFloat(result.total_payable || 0),
-      fob_value: parseFloat(result.fob_value || 0),
-      fob_rate: parseFloat(result.fob_rate || 1),
-      cif_ngn: parseFloat(result.cif_ngn || 0),
-      import_duty: parseFloat(result.import_duty || 0),
-      surcharge: parseFloat(result.surcharge || 0),
-      fcs: parseFloat(result.fcs || 0),
-      etls: parseFloat(result.etls || 0),
-      levy: parseFloat(result.levy || 0),
-      vat_base: parseFloat(result.vat_base || 0),
-      vat: parseFloat(result.vat || 0),
-      duty_rate: parseFloat(result.duty_rate || 0),
-      freight_cost: parseFloat(result.freight_cost || 0),
-      insurance_cost: parseFloat(result.insurance_cost || 0)
-    };
+  setHistory(prev => {
+    // Check for duplicate in current session only (last 5 seconds)
+    const recentDuplicate = prev.some(item => 
+      item.hs_code === historyItem.hs_code && 
+      Math.abs(new Date(item.created_at) - new Date(historyItem.created_at)) < 5000
+    );
     
-    setHistory(prev => {
-      // Double-check duplicate before adding
-      const exists = prev.some(item => 
-        item.hs_code === historyItem.hs_code && 
-        Math.abs(parseFloat(item.total_payable) - parseFloat(historyItem.total_payable)) < 1
-      );
-      
-      if (exists) {
-        console.log('Duplicate detected in state, not saving');
-        pendingSaves.delete(uniqueKey);
-        return prev;
-      }
-      
-      const newHistory = [historyItem, ...prev].slice(0, 50);
-      localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
-      pendingSaves.delete(uniqueKey);
-      return newHistory;
-    });
-  }, 100);
+    if (recentDuplicate) {
+      console.log('Recent duplicate (within 5 seconds), not saving');
+      return prev;
+    }
+    
+    const newHistory = [historyItem, ...prev].slice(0, 50);
+    localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
+    console.log('Saved to history, new length:', newHistory.length);
+    return newHistory;
+  });
 };
 
   const loadCalculation = (item) => {
@@ -107,7 +88,8 @@ const saveToHistory = (result) => {
  const clearHistory = () => {
   setHistory([]);
   localStorage.removeItem('dutyHistory');
-  pendingSaves.clear(); // Clear pending saves as well
+  localStorage.removeItem('savedHistoryKeys');
+  console.log('History cleared');
 };
 
   const handleCalculate = async (payload) => {
