@@ -31,53 +31,112 @@ const LoginModal = ({ onClose }) => {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{isLogin ? '🔐 Login' : '📝 Register'}</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000
+    }} onClick={onClose}>
+      <div style={{
+        background: 'white',
+        borderRadius: '12px',
+        width: '90%',
+        maxWidth: '400px',
+        padding: '24px',
+        position: 'relative'
+      }} onClick={(e) => e.stopPropagation()}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px'
+        }}>
+          <h2 style={{ margin: 0, fontSize: '20px', color: '#065f46' }}>
+            {isLogin ? '🔐 Login' : '📝 Register'}
+          </h2>
+          <button onClick={onClose} style={{
+            background: 'none',
+            border: 'none',
+            fontSize: '24px',
+            cursor: 'pointer',
+            color: '#64748b'
+          }}>×</button>
         </div>
         
         <form onSubmit={handleSubmit}>
           {!isLogin && (
-            <div className="form-group">
+            <div style={{ marginBottom: '15px' }}>
               <input
                 type="text"
                 placeholder="Full Name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
                 required
               />
             </div>
           )}
           
-          <div className="form-group">
+          <div style={{ marginBottom: '15px' }}>
             <input
               type="email"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
               required
             />
           </div>
           
-          <div className="form-group">
+          <div style={{ marginBottom: '15px' }}>
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
               required
             />
           </div>
           
-          {error && <div className="error-message">{error}</div>}
+          {error && <div style={{ color: '#dc2626', marginBottom: '15px', fontSize: '14px' }}>{error}</div>}
           
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              marginBottom: '10px'
+            }}
+          >
             {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
           </button>
           
-          <button type="button" className="btn-link" onClick={() => setIsLogin(!isLogin)}>
+          <button 
+            type="button" 
+            onClick={() => setIsLogin(!isLogin)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#10b981',
+              cursor: 'pointer',
+              width: '100%',
+              fontSize: '14px'
+            }}
+          >
             {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
           </button>
         </form>
