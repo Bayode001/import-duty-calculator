@@ -59,12 +59,16 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
       const result = await onCalculate(payload);
       console.log('Result for', cleanedCetCode, ':', result);
       
-      if (result) {
+      // Check if result is an error or success
+      if (result && !result.error) {
         calculatedResults.push({
           ...item,
           cetCode: cleanedCetCode,
           result: result
         });
+      } else if (result && result.error) {
+        console.log(`Error calculating ${cleanedCetCode}: ${result.message}`);
+        alert(`Error for ${cleanedCetCode}: ${result.message}`);
       }
     }
   }
@@ -72,7 +76,12 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   console.log('All calculated results:', calculatedResults);
   setResults(calculatedResults);
   setCalculating(false);
-  alert(`${calculatedResults.length} item(s) calculated! Click "Add to Cart" to save to history.`);
+  
+  if (calculatedResults.length === 0) {
+    alert('No valid calculations. Please check your HS codes and try again.');
+  } else {
+    alert(`${calculatedResults.length} item(s) calculated! Click "Add to Cart" to save to history.`);
+  }
 };
 
 
@@ -81,7 +90,7 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
     console.log('Saving items to history from cart...');
     
     results.forEach(item => {
-      if (item.result && item.result.hs_code) {
+      if (item.result && !item.result.error && item.result.hs_code) {
         console.log('Saving to history:', item.result.hs_code);
         onSaveToHistory(item.result);
       }

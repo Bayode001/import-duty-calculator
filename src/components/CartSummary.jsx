@@ -10,7 +10,7 @@ const CartSummary = ({ cart, onRemoveItem, onClearCart, onSaveToHistory }) => {
   };
 
   // Add this function to save cart items to history
- const saveCartToHistory = () => {
+const saveCartToHistory = () => {
   if (cart.length === 0) {
     alert('Cart is empty');
     return;
@@ -18,18 +18,14 @@ const CartSummary = ({ cart, onRemoveItem, onClearCart, onSaveToHistory }) => {
   
   if (onSaveToHistory) {
     let savedCount = 0;
-    const savedHsCodes = new Set(); // Track to prevent duplicates within this batch
-    
     cart.forEach(item => {
       const result = item.result || item;
-      if (result && result.hs_code && !savedHsCodes.has(result.hs_code)) {
-        savedHsCodes.add(result.hs_code);
+      if (result && !result.error && result.hs_code) {
         console.log('Saving to history from cart button:', result.hs_code);
         onSaveToHistory(result);
         savedCount++;
       }
     });
-    
     alert(`${savedCount} item(s) saved to history!`);
   } else {
     alert('Save to history function not available');
