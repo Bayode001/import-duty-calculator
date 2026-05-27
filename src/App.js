@@ -14,7 +14,6 @@ function AppContent() {
   const [history, setHistory] = useState([]);
   const [cart, setCart] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
- 
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('dutyHistory');
@@ -29,50 +28,48 @@ function AppContent() {
     }
   }, []);
 
-
-const saveToHistory = (result) => {
-  if (!result) return;
-  
-  console.log('Saving to history:', result.hs_code, 'Total:', result.total_payable);
-  
-  const historyItem = {
-    ...result,
-    id: result.id || Date.now().toString(),
-    created_at: result.created_at || new Date().toISOString(),
-    total_payable: parseFloat(result.total_payable || 0),
-    fob_value: parseFloat(result.fob_value || 0),
-    fob_rate: parseFloat(result.fob_rate || 1),
-    cif_ngn: parseFloat(result.cif_ngn || 0),
-    import_duty: parseFloat(result.import_duty || 0),
-    surcharge: parseFloat(result.surcharge || 0),
-    fcs: parseFloat(result.fcs || 0),
-    etls: parseFloat(result.etls || 0),
-    levy: parseFloat(result.levy || 0),
-    vat_base: parseFloat(result.vat_base || 0),
-    vat: parseFloat(result.vat || 0),
-    duty_rate: parseFloat(result.duty_rate || 0),
-    freight_cost: parseFloat(result.freight_cost || 0),
-    insurance_cost: parseFloat(result.insurance_cost || 0)
+  const saveToHistory = (result) => {
+    if (!result) return;
+    
+    console.log('Saving to history:', result.hs_code, 'Total:', result.total_payable);
+    
+    const historyItem = {
+      ...result,
+      id: result.id || Date.now().toString(),
+      created_at: result.created_at || new Date().toISOString(),
+      total_payable: parseFloat(result.total_payable || 0),
+      fob_value: parseFloat(result.fob_value || 0),
+      fob_rate: parseFloat(result.fob_rate || 1),
+      cif_ngn: parseFloat(result.cif_ngn || 0),
+      import_duty: parseFloat(result.import_duty || 0),
+      surcharge: parseFloat(result.surcharge || 0),
+      fcs: parseFloat(result.fcs || 0),
+      etls: parseFloat(result.etls || 0),
+      levy: parseFloat(result.levy || 0),
+      vat_base: parseFloat(result.vat_base || 0),
+      vat: parseFloat(result.vat || 0),
+      duty_rate: parseFloat(result.duty_rate || 0),
+      freight_cost: parseFloat(result.freight_cost || 0),
+      insurance_cost: parseFloat(result.insurance_cost || 0)
+    };
+    
+    setHistory(prev => {
+      const recentDuplicate = prev.some(item => 
+        item.hs_code === historyItem.hs_code && 
+        Math.abs(new Date(item.created_at) - new Date(historyItem.created_at)) < 5000
+      );
+      
+      if (recentDuplicate) {
+        console.log('Recent duplicate (within 5 seconds), not saving');
+        return prev;
+      }
+      
+      const newHistory = [historyItem, ...prev].slice(0, 50);
+      localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
+      console.log('Saved to history, new length:', newHistory.length);
+      return newHistory;
+    });
   };
-  
-  setHistory(prev => {
-    // Check for duplicate in current session only (last 5 seconds)
-    const recentDuplicate = prev.some(item => 
-      item.hs_code === historyItem.hs_code && 
-      Math.abs(new Date(item.created_at) - new Date(historyItem.created_at)) < 5000
-    );
-    
-    if (recentDuplicate) {
-      console.log('Recent duplicate (within 5 seconds), not saving');
-      return prev;
-    }
-    
-    const newHistory = [historyItem, ...prev].slice(0, 50);
-    localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
-    console.log('Saved to history, new length:', newHistory.length);
-    return newHistory;
-  });
-};
 
   const loadCalculation = (item) => {
     if (!item) return;
@@ -84,53 +81,52 @@ const saveToHistory = (result) => {
     }, 100);
   };
 
- const clearHistory = () => {
-  setHistory([]);
-  localStorage.removeItem('dutyHistory');
-  localStorage.removeItem('savedHistoryKeys');
-  console.log('History cleared');
-};
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem('dutyHistory');
+    localStorage.removeItem('savedHistoryKeys');
+    console.log('History cleared');
+  };
 
   const handleCalculate = async (payload) => {
-  console.log('handleCalculate called for:', payload.cetCode);
-  
-  try {
-    const response = await calculateDuty(payload);
-    console.log('handleCalculate response:', response);
+    console.log('handleCalculate called for:', payload.cetCode);
     
-    if (response.success && response.data) {
-      const completeResult = {
-        ...response.data,
-        created_at: new Date().toISOString(),
-        hs_code: response.data.hs_code || payload.cetCode,
-        fob_value: payload.fobAmount,
-        fob_currency: payload.currency,
-        freight_cost: payload.freightAmount || 0,
-        insurance_cost: payload.insuranceAmount || 0,
-        user_id: payload.user_id || null
-      };
-      console.log('Returning success result for:', completeResult.hs_code);
-      return completeResult;
-    } else {
-      // For error, return null (not an error object) to maintain compatibility
-      console.log('Response failed for:', payload.cetCode);
+    try {
+      const response = await calculateDuty(payload);
+      console.log('handleCalculate response:', response);
+      
+      if (response.success && response.data) {
+        const completeResult = {
+          ...response.data,
+          created_at: new Date().toISOString(),
+          hs_code: response.data.hs_code || payload.cetCode,
+          fob_value: payload.fobAmount,
+          fob_currency: payload.currency,
+          freight_cost: payload.freightAmount || 0,
+          insurance_cost: payload.insuranceAmount || 0,
+          user_id: payload.user_id || null
+        };
+        console.log('Returning success result for:', completeResult.hs_code);
+        return completeResult;
+      } else {
+        console.log('Response failed for:', payload.cetCode);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error in handleCalculate:', error);
       return null;
     }
-  } catch (error) {
-    console.error('Error in handleCalculate:', error);
-    return null;
-  }
-};
+  };
 
-const handleSingleCalculate = async (payload) => {
-  const result = await handleCalculate(payload);
-  if (result) {
-    saveToHistory(result);
-  }
-  return result;
-};
+  const handleSingleCalculate = async (payload) => {
+    const result = await handleCalculate(payload);
+    if (result) {
+      saveToHistory(result);
+    }
+    return result;
+  };
 
-const addToCart = (items) => {
+  const addToCart = (items) => {
     if (!items || !Array.isArray(items)) return;
     setCart([...cart, ...items]);
   };
@@ -151,36 +147,13 @@ const addToCart = (items) => {
         <div className="header-actions">
           {user ? (
             <div className="user-info">
-            <span>👋 {user.name || user.email}</span>
+              <span>👋 {user.name || user.email}</span>
               <span className="user-tier">{user.tier || 'Free'}</span>
-              <button onClick={handleLogout} className="btn-logout">Logout</button>
+              <button onClick={logout} className="btn-logout">Logout</button>
             </div>
           ) : (
             <button onClick={() => setShowLogin(true)} className="btn-login">Login</button>
           )}
-
-          {showLogin && (
-  <div style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    background: 'red',
-    color: 'white',
-    padding: '20px',
-    zIndex: 9999
-  }}>
-    TEST MODAL - showLogin is TRUE
-    <button onClick={() => setShowLogin(false)}>Close</button>
-  </div>
-)}
-          <button onClick={() => {
-  console.log('Login button clicked');
-  setShowLogin(true);
-  console.log('showLogin is now:', true);
-}} className="btn-login">
-  Login
-</button>
         </div>
       </header>
       
@@ -205,7 +178,7 @@ const addToCart = (items) => {
         )}
         
         {activeTab === 'multi' && (
-          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart}  onSaveToHistory={saveToHistory} />
+          <MultiItemCalculator onCalculate={handleCalculate} onAddToCart={addToCart} onSaveToHistory={saveToHistory} />
         )}
         
         {activeTab === 'cart' && (
@@ -226,7 +199,7 @@ const addToCart = (items) => {
         <p>© 2026 Pearl 12-77 Limited</p>
       </footer>
       
-      {showLogin && <LoginModal onClose={() =>    console.log('Closing modal'); setShowLogin(false)} />}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   );
 }
