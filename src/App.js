@@ -106,28 +106,25 @@ const saveToHistory = (result) => {
           insurance_cost: payload.insuranceAmount || 0,
           user_id: payload.user_id || null
         };
-        saveToHistory(completeResult);
-        return completeResult;
-      }
-      return null;
-    } catch (error) {
-      console.error('Error in handleCalculate:', error);
-      return null;
+       
+     console.log('Returning result for:', completeResult.hs_code);
+      return completeResult;
     }
-  };
+    console.log('Response failed for:', payload.cetCode);
+    return null;
+  } catch (error) {
+    console.error('Error in handleCalculate:', error);
+    return null;
+  }
+};
 
-  const addToCart = (items) => {
-    if (!items || !Array.isArray(items)) return;
-    setCart([...cart, ...items]);
-  };
-
-  const removeFromCart = (index) => {
-    setCart(cart.filter((_, i) => i !== index));
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
+const handleSingleCalculate = async (payload) => {
+  const result = await handleCalculate(payload);
+  if (result) {
+    saveToHistory(result);
+  }
+  return result;
+};
 
   return (
     <div className="App">
@@ -163,7 +160,7 @@ const saveToHistory = (result) => {
       
       <main className="app-main">
         {activeTab === 'calculator' && (
-          <DutyCalculator onCalculate={handleCalculate} />
+          <DutyCalculator onCalculate={handleSingleCalculate} />
         )}
         
         {activeTab === 'multi' && (
