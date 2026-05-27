@@ -120,8 +120,15 @@ const DutyCalculator = ({ onCalculate }) => {
     
     if (onCalculate) {
       const resultData = await onCalculate(payload);
-      if (resultData) {
+      console.log('onCalculate resultData:', resultData);
+      
+      // Check if the result contains an error
+      if (resultData && resultData.error) {
+        setError(resultData.message || 'Calculation failed. Please try again.');
+        setResult(null);
+      } else if (resultData) {
         setResult(resultData);
+        setError(null);
       } else {
         setError('Calculation failed. Please try again.');
       }
@@ -129,6 +136,7 @@ const DutyCalculator = ({ onCalculate }) => {
       response = await calculateDuty(payload);
       if (response.success) {
         setResult(response.data);
+        setError(null);
       } else {
         setError(response.error || 'Calculation failed. Please try again.');
       }
@@ -140,7 +148,6 @@ const DutyCalculator = ({ onCalculate }) => {
   
   setLoading(false);
 };
-
   
   const handleReset = () => {
     setFormData({

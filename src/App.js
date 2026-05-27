@@ -93,28 +93,33 @@ const saveToHistory = (result) => {
 };
 
   const handleCalculate = async (payload) => {
-    try {
-      const response = await calculateDuty(payload);
-      if (response.success && response.data) {
-        const completeResult = {
-          ...response.data,
-          created_at: new Date().toISOString(),
-          hs_code: response.data.hs_code || payload.cetCode,
-          fob_value: payload.fobAmount,
-          fob_currency: payload.currency,
-          freight_cost: payload.freightAmount || 0,
-          insurance_cost: payload.insuranceAmount || 0,
-          user_id: payload.user_id || null
-        };
-       
-     console.log('Returning result for:', completeResult.hs_code);
+  console.log('handleCalculate called for:', payload.cetCode);
+  
+  try {
+    const response = await calculateDuty(payload);
+    console.log('handleCalculate response:', response);
+    
+    if (response.success && response.data) {
+      const completeResult = {
+        ...response.data,
+        created_at: new Date().toISOString(),
+        hs_code: response.data.hs_code || payload.cetCode,
+        fob_value: payload.fobAmount,
+        fob_currency: payload.currency,
+        freight_cost: payload.freightAmount || 0,
+        insurance_cost: payload.insuranceAmount || 0,
+        user_id: payload.user_id || null
+      };
+      console.log('Returning result for:', completeResult.hs_code);
       return completeResult;
+    } else {
+      // Return error object instead of null
+      console.log('Response failed for:', payload.cetCode, 'Error:', response.error);
+      return { error: true, message: response.error || 'Calculation failed. Please try again.' };
     }
-    console.log('Response failed for:', payload.cetCode);
-    return null;
   } catch (error) {
     console.error('Error in handleCalculate:', error);
-    return null;
+    return { error: true, message: 'An unexpected error occurred' };
   }
 };
 
