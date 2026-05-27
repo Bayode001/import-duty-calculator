@@ -50,7 +50,7 @@ const APIKeyManager = () => {
       
       {generatedKey && (
         <div className="new-key-warning">
-          <strong>⚠️ New API Key:</strong>
+          <p><strong>⚠️ New API Key:</strong></p>
           <code>{generatedKey}</code>
           <p>Copy this key now. It won't be shown again!</p>
         </div>
@@ -59,10 +59,10 @@ const APIKeyManager = () => {
       <div className="api-key-info">
         <h4>How to use your API key</h4>
         <pre className="code-example">
-          curl -X POST https://nigeria-energy.duckdns.org/webhook/calculate-duty \
-          -H "Content-Type: application/json" \
-          -H "X-API-Key: YOUR_API_KEY" \
-          -d '{"cetCode":"7311000000","fobAmount":26400,"currency":"USD","freightAmount":6400}'
+{`curl -X POST https://nigeria-energy.duckdns.org/webhook/calculate-duty \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -d '{"cetCode":"7311000000","fobAmount":26400,"currency":"USD","freightAmount":6400}'`}
         </pre>
       </div>
     </div>
