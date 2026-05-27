@@ -12,20 +12,28 @@ export const calculateDuty = async (payload) => {
       body: JSON.stringify(payload)
     });
     
-    // Always try to parse the response as JSON first
-    const data = await response.json();
-    console.log('API Response:', data);
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
     
-    // Check if response is not OK (404, 500, etc.)
-    if (!response.ok) {
-      // Return the error message from the API if available
-      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-      return { success: false, error: errorMessage };
+    // Get the response text first to see what's coming back
+    const responseText = await response.text();
+    console.log('Raw response text:', responseText);
+    
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log('Parsed JSON data:', data);
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      return { success: false, error: 'Invalid response from server' };
     }
     
-    // Check if the response contains an error field
-    if (data.error === "true" || data.error === true || data.statusCode === 404) {
-      return { success: false, error: data.message || 'HS Code not found in tariff database' };
+    // Check for error in response
+    if (!response.ok || data.error === "true" || data.error === true || data.statusCode === 404) {
+      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+      console.log('Error message:', errorMessage);
+      return { success: false, error: errorMessage };
     }
     
     return { success: true, data: data };
@@ -34,5 +42,3 @@ export const calculateDuty = async (payload) => {
     return { success: false, error: 'Network error. Please check your connection.' };
   }
 };
-
-export default { calculateDuty };
