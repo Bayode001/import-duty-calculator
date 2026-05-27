@@ -223,29 +223,29 @@ ${'='.repeat(50)}`;
       <div className="form-panel">
         <h2>Import Details</h2>
         <form onSubmit={handleSubmit}>
-         <div className="form-group">
-  <label htmlFor="cetCode">HS Code (CET Code) *</label>
-  <div className="hs-input-group">
-    <input
-      type="text"
-      id="cetCode"
-      name="cetCode"
-      value={formData.cetCode}
-      onChange={handleChange}
-      placeholder="e.g., 7311000000"
-      className="hs-code-input"
-      required
-    />
-    <button 
-      type="button" 
-      onClick={() => setShowHSLookup(true)} 
-      className="btn-search-hs"
-    >
-      🔍 Search
-    </button>
-  </div>
-  <small>Enter the 10-digit HS/CET code or click Search to find by product description</small>
-</div>
+          <div className="form-group">
+            <label htmlFor="cetCode">HS Code (CET Code) *</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input
+                type="text"
+                id="cetCode"
+                name="cetCode"
+                value={formData.cetCode}
+                onChange={handleChange}
+                placeholder="e.g., 7311000000"
+                style={{ flex: 1 }}
+                required
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowHSLookup(true)} 
+                className="btn-search"
+              >
+                🔍 Search by Description
+              </button>
+            </div>
+            <small>Enter the 10-digit HS/CET code or search by product description</small>
+          </div>
 
           <div className="form-row">
             <div className="form-group">

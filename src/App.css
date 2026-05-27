@@ -932,3 +932,87 @@ body {
   color: #92400e;
   text-align: center;
 }
+
+/* HS Code Input Group */
+.hs-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hs-code-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.hs-code-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.btn-search-hs {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.btn-search-hs:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* Fix PDF button in result card */
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-pdf-export {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.btn-pdf-export:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Ensure result card sections don't overflow */
+.result-section {
+  overflow-x: auto;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.total-section {
+  overflow-x: auto;
+}
