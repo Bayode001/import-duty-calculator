@@ -35,8 +35,7 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
       item.id === id ? { ...item, [field]: cleanedValue } : item
     ));
   };
-
-  const calculateAll = async () => {
+const calculateAll = async () => {
   setCalculating(true);
   setResults([]);
   const calculatedResults = [];
@@ -59,16 +58,17 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
       const result = await onCalculate(payload);
       console.log('Result for', cleanedCetCode, ':', result);
       
-      // Check if result is an error or success
-      if (result && !result.error) {
+      // Check if result is valid (not null)
+      if (result && result.total_payable) {
         calculatedResults.push({
           ...item,
           cetCode: cleanedCetCode,
           result: result
         });
-      } else if (result && result.error) {
-        console.log(`Error calculating ${cleanedCetCode}: ${result.message}`);
-        alert(`Error for ${cleanedCetCode}: ${result.message}`);
+      } else {
+        console.log(`Failed to calculate ${cleanedCetCode}`);
+        // Show error for this specific item
+        alert(`Failed to calculate HS Code: ${cleanedCetCode}. Please verify the code.`);
       }
     }
   }

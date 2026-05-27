@@ -120,17 +120,17 @@ const DutyCalculator = ({ onCalculate }) => {
     
     if (onCalculate) {
       const resultData = await onCalculate(payload);
-      console.log('onCalculate resultData:', resultData);
-      
-      // Check if the result contains an error
-      if (resultData && resultData.error) {
-        setError(resultData.message || 'Calculation failed. Please try again.');
-        setResult(null);
-      } else if (resultData) {
+      if (resultData) {
         setResult(resultData);
         setError(null);
       } else {
-        setError('Calculation failed. Please try again.');
+        // For error, we need to get the error message from the API directly
+        const directResponse = await calculateDuty(payload);
+        if (directResponse.success === false) {
+          setError(directResponse.error || 'Calculation failed. Please try again.');
+        } else {
+          setError('Calculation failed. Please try again.');
+        }
       }
     } else {
       response = await calculateDuty(payload);

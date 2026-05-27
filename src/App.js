@@ -110,16 +110,16 @@ const saveToHistory = (result) => {
         insurance_cost: payload.insuranceAmount || 0,
         user_id: payload.user_id || null
       };
-      console.log('Returning result for:', completeResult.hs_code);
+      console.log('Returning success result for:', completeResult.hs_code);
       return completeResult;
     } else {
-      // Return error object instead of null
-      console.log('Response failed for:', payload.cetCode, 'Error:', response.error);
-      return { error: true, message: response.error || 'Calculation failed. Please try again.' };
+      // For error, return null (not an error object) to maintain compatibility
+      console.log('Response failed for:', payload.cetCode);
+      return null;
     }
   } catch (error) {
     console.error('Error in handleCalculate:', error);
-    return { error: true, message: 'An unexpected error occurred' };
+    return null;
   }
 };
 
