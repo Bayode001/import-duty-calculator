@@ -1,6 +1,8 @@
 import React from 'react';
 
 const ErrorAlert = ({ message, onDismiss }) => {
+  if (!message) return null;
+  
   return (
     <div className="error-alert">
       <span className="error-icon">⚠️</span>
