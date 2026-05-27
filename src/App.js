@@ -172,6 +172,9 @@ const addToCart = (items) => {
         </div>
       </header>
       
+        <button onClick={() => {console.log('Login button clicked'); setShowLogin(true); }} className="btn-login">  Login </button>
+
+
       <div className="tabs">
         <button className={activeTab === 'calculator' ? 'tab-active' : 'tab'} onClick={() => setActiveTab('calculator')}>
           🧮 Calculator
