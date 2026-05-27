@@ -131,7 +131,6 @@ const handleSingleCalculate = async (payload) => {
   return result;
 };
 
-
 const addToCart = (items) => {
     if (!items || !Array.isArray(items)) return;
     setCart([...cart, ...items]);
