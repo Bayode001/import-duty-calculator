@@ -158,6 +158,29 @@ const addToCart = (items) => {
           ) : (
             <button onClick={() => setShowLogin(true)} className="btn-login">Login</button>
           )}
+
+          {showLogin && (
+  <div style={{
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'red',
+    color: 'white',
+    padding: '20px',
+    zIndex: 9999
+  }}>
+    TEST MODAL - showLogin is TRUE
+    <button onClick={() => setShowLogin(false)}>Close</button>
+  </div>
+)}
+          <button onClick={() => {
+  console.log('Login button clicked');
+  setShowLogin(true);
+  console.log('showLogin is now:', true);
+}} className="btn-login">
+  Login
+</button>
         </div>
       </header>
       
@@ -203,7 +226,7 @@ const addToCart = (items) => {
         <p>© 2026 Pearl 12-77 Limited</p>
       </footer>
       
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      {showLogin && <LoginModal onClose={() =>    console.log('Closing modal'); setShowLogin(false)} />}
     </div>
   );
 }
