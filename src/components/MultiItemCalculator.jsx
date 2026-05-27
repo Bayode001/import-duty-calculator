@@ -75,26 +75,21 @@ const MultiItemCalculator = ({ onCalculate, onAddToCart, onSaveToHistory }) => {
   alert(`${calculatedResults.length} item(s) calculated! Click "Add to Cart" to save to history.`);
 };
 
+
  const addToCart = () => {
-  console.log('addToCart called. Results length:', results.length);
-  console.log('Results:', results);
-  console.log('onSaveToHistory exists?', !!onSaveToHistory);
-  
   if (results.length > 0 && onSaveToHistory) {
-    results.forEach((item, index) => {
-      console.log(`Item ${index + 1}:`, item.cetCode, 'Result:', item.result);
+    console.log('Saving items to history from cart...');
+    
+    results.forEach(item => {
       if (item.result && item.result.hs_code) {
-        console.log(`Calling onSaveToHistory for ${item.result.hs_code}`);
+        console.log('Saving to history:', item.result.hs_code);
         onSaveToHistory(item.result);
-      } else {
-        console.log(`No valid result for ${item.cetCode}`);
       }
     });
     
     onAddToCart(results);
-    alert(`${results.length} item(s) added to cart!`);
+    alert(`${results.length} item(s) added to cart and saved to history!`);
   } else {
-    console.log('Cannot add to cart - no results or no onSaveToHistory');
     if (results.length === 0) alert('No valid calculations to add. Please calculate items first.');
     if (!onSaveToHistory) alert('Save to history function not available');
   }
