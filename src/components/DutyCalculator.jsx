@@ -3,6 +3,7 @@ import { calculateDuty } from '../services/api';
 import ResultCard from './ResultCard';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorAlert from './ErrorAlert';
+import HSLookupModal from './HSLookupModal';
 
 const DutyCalculator = ({ onCalculate }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const DutyCalculator = ({ onCalculate }) => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showHSLookup, setShowHSLookup] = useState(false);
   
   // Use a ref to track if event listener is set
   const listenerSet = useRef(false);
@@ -34,17 +36,19 @@ const DutyCalculator = ({ onCalculate }) => {
     { code: 'ZAR', name: 'South African Rand', symbol: 'R' }
   ];
 
+  // Handle HS code selection from search modal
+  const handleHSSelect = (hsCode, description) => {
+    setFormData(prev => ({ ...prev, cetCode: hsCode }));
+    console.log(`Selected: ${hsCode} - ${description}`);
+  };
+
   // Event listener for loading from history - set up once
   useEffect(() => {
     if (listenerSet.current) return;
     listenerSet.current = true;
     
-    //console.log('🔍 DEBUG - Setting up persistent event listener');
-    
     const handleLoadCalculation = (event) => {
-      //console.log('🔍 DEBUG - loadCalculation event received!', event);
       const item = event.detail;
-      //console.log('🔍 DEBUG - Item detail:', item);
       
       if (item) {
         console.log('🔍 DEBUG - Setting form data with:', {
@@ -79,7 +83,7 @@ const DutyCalculator = ({ onCalculate }) => {
       window.removeEventListener('loadCalculation', handleLoadCalculation);
       listenerSet.current = false;
     };
-  }, []); // Empty dependency array - only runs once
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -88,66 +92,66 @@ const DutyCalculator = ({ onCalculate }) => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
-  setResult(null);
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
-  const payload = {
-    cetCode: formData.cetCode.trim(),
-    fobAmount: parseFloat(formData.fobAmount),
-    currency: formData.currency,
-    freightAmount: parseFloat(formData.freightAmount) || 0,
-    insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
-    levyBasis: formData.levyBasis,
-    user_id: formData.userId || null
-  };
+    const payload = {
+      cetCode: formData.cetCode.trim(),
+      fobAmount: parseFloat(formData.fobAmount),
+      currency: formData.currency,
+      freightAmount: parseFloat(formData.freightAmount) || 0,
+      insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
+      levyBasis: formData.levyBasis,
+      user_id: formData.userId || null
+    };
 
-  if (!payload.cetCode) {
-    setError('Please enter an HS/CET Code');
-    setLoading(false);
-    return;
-  }
+    if (!payload.cetCode) {
+      setError('Please enter an HS/CET Code');
+      setLoading(false);
+      return;
+    }
 
-  if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
-    setError('Please enter a valid FOB Value');
-    setLoading(false);
-    return;
-  }
+    if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
+      setError('Please enter a valid FOB Value');
+      setLoading(false);
+      return;
+    }
 
-  try {
-    let response;
-    
-    if (onCalculate) {
-      const resultData = await onCalculate(payload);
-      if (resultData) {
-        setResult(resultData);
-        setError(null);
-      } else {
-        // For error, we need to get the error message from the API directly
-        const directResponse = await calculateDuty(payload);
-        if (directResponse.success === false) {
-          setError(directResponse.error || 'Calculation failed. Please try again.');
+    try {
+      let response;
+      
+      if (onCalculate) {
+        const resultData = await onCalculate(payload);
+        if (resultData) {
+          setResult(resultData);
+          setError(null);
         } else {
-          setError('Calculation failed. Please try again.');
+          // For error, we need to get the error message from the API directly
+          const directResponse = await calculateDuty(payload);
+          if (directResponse.success === false) {
+            setError(directResponse.error || 'Calculation failed. Please try again.');
+          } else {
+            setError('Calculation failed. Please try again.');
+          }
+        }
+      } else {
+        response = await calculateDuty(payload);
+        if (response.success) {
+          setResult(response.data);
+          setError(null);
+        } else {
+          setError(response.error || 'Calculation failed. Please try again.');
         }
       }
-    } else {
-      response = await calculateDuty(payload);
-      if (response.success) {
-        setResult(response.data);
-        setError(null);
-      } else {
-        setError(response.error || 'Calculation failed. Please try again.');
-      }
+    } catch (error) {
+      console.error('Calculation error:', error);
+      setError('An unexpected error occurred');
     }
-  } catch (error) {
-    console.error('Calculation error:', error);
-    setError('An unexpected error occurred');
-  }
-  
-  setLoading(false);
-};
+    
+    setLoading(false);
+  };
   
   const handleReset = () => {
     setFormData({
@@ -221,16 +225,26 @@ ${'='.repeat(50)}`;
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="cetCode">HS Code (CET Code) *</label>
-            <input
-              type="text"
-              id="cetCode"
-              name="cetCode"
-              value={formData.cetCode}
-              onChange={handleChange}
-              placeholder="e.g., 7311000000"
-              required
-            />
-            <small>Enter the 10-digit HS/CET classification code</small>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input
+                type="text"
+                id="cetCode"
+                name="cetCode"
+                value={formData.cetCode}
+                onChange={handleChange}
+                placeholder="e.g., 7311000000"
+                style={{ flex: 1 }}
+                required
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowHSLookup(true)} 
+                className="btn-search"
+              >
+                🔍 Search by Description
+              </button>
+            </div>
+            <small>Enter the 10-digit HS/CET code or search by product description</small>
           </div>
 
           <div className="form-row">
@@ -341,6 +355,13 @@ ${'='.repeat(50)}`;
           </div>
         )}
       </div>
+
+      {/* HS Lookup Modal */}
+      <HSLookupModal 
+        isOpen={showHSLookup} 
+        onClose={() => setShowHSLookup(false)} 
+        onSelect={handleHSSelect} 
+      />
     </div>
   );
 };
