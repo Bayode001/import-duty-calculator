@@ -14,7 +14,7 @@ function AppContent() {
   const [history, setHistory] = useState([]);
   const [cart, setCart] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
-  const [user, setUser] = useState(null);
+ 
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('dutyHistory');
