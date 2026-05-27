@@ -766,157 +766,164 @@ body {
   color: #94a3b8;
 }
 
-/* Modal */
-.modal-overlay {
+/* HS Lookup Modal Styles */
+.hs-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-.modal-content {
+.hs-modal-content {
   background: white;
-  padding: 30px;
-  border-radius: 20px;
+  border-radius: 12px;
   width: 90%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.modal-content input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-}
-
-.modal-content button {
-  margin: 5px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.modal-content button[type="submit"] {
-  background: #10b981;
-  color: white;
-}
-
-.error-message {
-  color: #ef4444;
-  font-size: 12px;
-  margin: 5px 0;
-}
-
-.result-header {
+.hs-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
 }
 
-.btn-pdf-export {
-  background: #ef4444;
-  color: white;
+.hs-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #065f46;
+}
+
+.hs-modal-close {
+  background: none;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  font-size: 24px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  color: #64748b;
+  padding: 0 8px;
 }
 
-.btn-pdf-export:hover {
-  background: #dc2626;
+.hs-modal-close:hover {
+  color: #ef4444;
 }
 
+.hs-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
 
-.btn-save-history {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 8px 16px;
+.hs-search-box {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.hs-search-box input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
 }
 
-.btn-save-history:hover {
-  background: #2563eb;
-}
-
-
-.btn-search {
+.hs-search-box button {
+  padding: 10px 20px;
   background: #10b981;
   color: white;
   border: none;
-  padding: 0 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  white-space: nowrap;
+  font-weight: 500;
 }
 
-.btn-search:hover {
+.hs-search-box button:hover {
   background: #059669;
 }
 
-.search-results {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-top: 16px;
-  border: 1px solid #e2e8f0;
+.hs-error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 10px;
   border-radius: 8px;
+  margin: 10px 0;
 }
 
-.results-header {
+.hs-loading {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+}
+
+.hs-search-results {
+  margin-top: 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hs-results-header {
   display: grid;
-  grid-template-columns: 130px 1fr 80px;
+  grid-template-columns: 120px 1fr 80px;
   background: #f1f5f9;
   padding: 10px;
   font-weight: 600;
+  font-size: 13px;
   border-bottom: 1px solid #e2e8f0;
-  position: sticky;
-  top: 0;
 }
 
-.search-result-item {
+.hs-results-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.hs-result-item {
   display: grid;
-  grid-template-columns: 130px 1fr 80px;
+  grid-template-columns: 120px 1fr 80px;
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #f1f5f9;
   transition: background 0.2s;
+  font-size: 13px;
 }
 
-.search-result-item:hover {
+.hs-result-item:hover {
   background: #ecfdf5;
 }
 
-.hs-code {
+.hs-result-code {
   font-family: monospace;
   font-weight: 600;
   color: #065f46;
 }
 
-.hs-desc {
+.hs-result-desc {
   color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 10px;
 }
 
-.hs-rate {
+.hs-result-rate {
   color: #64748b;
+  text-align: right;
 }
 
-.search-tip {
+.hs-search-tip {
   margin-top: 12px;
   padding: 8px;
   background: #fef3c7;
