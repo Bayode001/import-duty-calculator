@@ -42,3 +42,24 @@ export const calculateDuty = async (payload) => {
     return { success: false, error: 'Network error. Please check your connection.' };
   }
 };
+
+const getAuthHeaders = () => {
+  const headers = { 'Content-Type': 'application/json' };
+  const sessionToken = localStorage.getItem('sessionToken');
+  const apiKey = process.env.REACT_APP_API_KEY;
+  
+  if (sessionToken) {
+    headers['X-Session-Token'] = sessionToken;
+  } else if (apiKey) {
+    headers['X-API-Key'] = apiKey;
+  }
+  
+  return headers;
+};
+
+// Use in fetch calls
+const response = await fetch(API_BASE_URL, {
+  method: 'POST',
+  headers: getAuthHeaders(),
+  body: JSON.stringify(payload)
+});

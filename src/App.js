@@ -14,6 +14,7 @@ function AppContent() {
   const [history, setHistory] = useState([]);
   const [cart, setCart] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const savedHistory = localStorage.getItem('dutyHistory');
@@ -27,6 +28,27 @@ function AppContent() {
       }
     }
   }, []);
+
+  useEffect(() => {
+  const savedUser = localStorage.getItem('user');
+  if (savedUser) {
+    setUser(JSON.parse(savedUser));
+  }
+}, []);
+
+
+// Handle successful login
+const handleLoginSuccess = (userData) => {
+  setUser(userData);
+};
+
+// Handle logout
+const handleLogout = () => {
+  localStorage.removeItem('user');
+  localStorage.removeItem('sessionToken');
+  setUser(null);
+};
+
 
  // Track pending saves to prevent duplicates
 let pendingSaves = new Set();
@@ -152,8 +174,9 @@ const addToCart = (items) => {
         <div className="header-actions">
           {user ? (
             <div className="user-info">
-              <span>👋 {user.name}</span>
-              <button onClick={logout} className="btn-logout">Logout</button>
+            <span>👋 {user.name || user.email}</span>
+              <span className="user-tier">{user.tier || 'Free'}</span>
+              <button onClick={handleLogout} className="btn-logout">Logout</button>
             </div>
           ) : (
             <button onClick={() => setShowLogin(true)} className="btn-login">Login</button>
