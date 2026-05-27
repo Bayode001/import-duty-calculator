@@ -29,17 +29,6 @@ function AppContent() {
     }
   }, []);
 
-  useEffect(() => {
-  const savedUser = localStorage.getItem('user');
-  if (savedUser) {
-    setUser(JSON.parse(savedUser));
-  }
-}, []);
-
-
-
- // Track pending saves to prevent duplicates
-let pendingSaves = new Set();
 
 const saveToHistory = (result) => {
   if (!result) return;
@@ -172,9 +161,6 @@ const addToCart = (items) => {
         </div>
       </header>
       
-        <button onClick={() => {console.log('Login button clicked'); setShowLogin(true); }} className="btn-login">  Login </button>
-
-
       <div className="tabs">
         <button className={activeTab === 'calculator' ? 'tab-active' : 'tab'} onClick={() => setActiveTab('calculator')}>
           🧮 Calculator
