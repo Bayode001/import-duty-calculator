@@ -131,6 +131,20 @@ const handleSingleCalculate = async (payload) => {
   return result;
 };
 
+
+const addToCart = (items) => {
+    if (!items || !Array.isArray(items)) return;
+    setCart([...cart, ...items]);
+  };
+
+  const removeFromCart = (index) => {
+    setCart(cart.filter((_, i) => i !== index));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
     <div className="App">
       <header className="app-header">
