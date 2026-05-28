@@ -48,4 +48,17 @@ export const calculateDuty = async (payload) => {
   }
 };
 
+// After getting the response, log the raw text
+const text = await response.text();
+console.log('Raw response:', text);
+
+// Then try to parse
+let data;
+try {
+  data = JSON.parse(text);
+} catch(e) {
+  console.error('Failed to parse:', text);
+  return { success: false, error: 'Server error' };
+}
+
 export default { calculateDuty };
