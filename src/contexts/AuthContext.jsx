@@ -77,12 +77,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setSessionToken(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('sessionToken');
-  };
+  const logout = async () => {
+  const sessionToken = localStorage.getItem('sessionToken');
+  
+  if (sessionToken) {
+    try {
+      await fetch('https://nigeria-energy.duckdns.org/webhook/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Session-Token': sessionToken
+        }
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
+  
+  localStorage.removeItem('sessionToken');
+  localStorage.removeItem('user');
+  setUser(null);
+};
 
   const generateApiKey = async (keyName) => {
     if (!user) return { success: false, error: 'Not authenticated' };
