@@ -92,66 +92,51 @@ const DutyCalculator = ({ onCalculate }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setResult(null);
 
-    const payload = {
-      cetCode: formData.cetCode.trim(),
-      fobAmount: parseFloat(formData.fobAmount),
-      currency: formData.currency,
-      freightAmount: parseFloat(formData.freightAmount) || 0,
-      insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
-      levyBasis: formData.levyBasis,
-      user_id: formData.userId || null
-    };
-
-    if (!payload.cetCode) {
-      setError('Please enter an HS/CET Code');
-      setLoading(false);
-      return;
-    }
-
-    if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
-      setError('Please enter a valid FOB Value');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      let response;
-      
-      if (onCalculate) {
-        const resultData = await onCalculate(payload);
-        if (resultData) {
-          setResult(resultData);
-          setError(null);
-        } else {
-          // For error, we need to get the error message from the API directly
-          const directResponse = await calculateDuty(payload);
-          if (directResponse.success === false) {
-            setError(directResponse.error || 'Calculation failed. Please try again.');
-          } else {
-            setError('Calculation failed. Please try again.');
-          }
-        }
-      } else {
-        response = await calculateDuty(payload);
-        if (response.success) {
-          setResult(response.data);
-          setError(null);
-        } else {
-          setError(response.error || 'Calculation failed. Please try again.');
-        }
-      }
-    } catch (error) {
-      console.error('Calculation error:', error);
-      setError('An unexpected error occurred');
-    }
-    
-    setLoading(false);
+  const payload = {
+    cetCode: formData.cetCode.trim(),
+    fobAmount: parseFloat(formData.fobAmount),
+    currency: formData.currency,
+    freightAmount: parseFloat(formData.freightAmount) || 0,
+    insuranceAmount: parseFloat(formData.insuranceAmount) || 0,
+    levyBasis: formData.levyBasis,
+    user_id: formData.userId || null
   };
+
+  if (!payload.cetCode) {
+    setError('Please enter an HS/CET Code');
+    setLoading(false);
+    return;
+  }
+
+  if (isNaN(payload.fobAmount) || payload.fobAmount <= 0) {
+    setError('Please enter a valid FOB Value');
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const response = await calculateDuty(payload);
+    console.log('Calculation response:', response);
+    
+    if (response.success) {
+      setResult(response.data);
+      setError(null);
+    } else {
+      // Display the error message from the API
+      setError(response.error || 'Calculation failed. Please try again.');
+    }
+  } catch (error) {
+    console.error('Calculation error:', error);
+    setError('An unexpected error occurred');
+  }
+  
+  setLoading(false);
+};
   
   const handleReset = () => {
     setFormData({
