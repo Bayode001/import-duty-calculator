@@ -23,16 +23,13 @@ export const calculateDuty = async (payload) => {
     
     console.log('Response status:', response.status);
     
-    // Try to get the response text
-    const text = await response.text();
-    console.log('Raw response:', text);
-    
-    // Try to parse as JSON
+    // Always try to parse as JSON first
     let data;
     try {
-      data = JSON.parse(text);
-    } catch (e) {
-      // If not JSON, check if it's an error message
+      data = await response.json();
+      console.log('Parsed data:', data);
+    } catch (jsonError) {
+      // If not JSON, check status
       if (!response.ok) {
         return { success: false, error: `Error ${response.status}: ${response.statusText}` };
       }
@@ -40,9 +37,12 @@ export const calculateDuty = async (payload) => {
     }
     
     // Check for error in response
-    if (!response.ok || data.error === true) {
-      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
-      return { success: false, error: errorMessage };
+    if (data.error === true || data.statusCode === 401) {
+      return { success: false, error: data.message || 'Please login' };
+    }
+    
+    if (!response.ok) {
+      return { success: false, error: data.message || `HTTP error! status: ${response.status}` };
     }
     
     return { success: true, data: data };
