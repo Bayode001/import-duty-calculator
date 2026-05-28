@@ -22,16 +22,18 @@ export const calculateDuty = async (payload) => {
     });
     
     console.log('Response status:', response.status);
-    console.log('Response ok:', response.ok);
     
-    // Try to parse JSON, but handle non-JSON responses
+    // Get raw response text first
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    // Try to parse as JSON
     let data;
     try {
-      data = await response.json();
-      console.log('API Response:', data);
-    } catch (jsonError) {
-      // If response is not JSON (e.g., HTML error page)
-      console.error('Response is not JSON:', jsonError);
+      data = JSON.parse(text);
+      console.log('Parsed data:', data);
+    } catch (e) {
+      console.error('Failed to parse JSON:', text);
       return { success: false, error: 'Server error. Please try again.' };
     }
     
@@ -47,19 +49,5 @@ export const calculateDuty = async (payload) => {
     return { success: false, error: 'Network error. Please check your connection.' };
   }
 };
-
-// After getting the response, log the raw text
-const text = await response.text();
-console.log('Raw response:', text);
-
-// Then try to parse
-let data;
-try {
-  data = JSON.parse(text);
-} catch(e) {
-  console.error('Failed to parse:', text);
-  return { success: false, error: 'Server error' };
-}
-
 
 export default { calculateDuty };
