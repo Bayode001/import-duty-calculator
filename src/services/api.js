@@ -21,21 +21,29 @@ export const calculateDuty = async (payload) => {
       body: JSON.stringify(payload)
     });
     
-    // If response is not OK (401, 404, etc.)
-    if (!response.ok) {
-      let errorMessage = `HTTP error! status: ${response.status}`;
-      try {
-        const data = await response.json();
-        errorMessage = data.message || data.error || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
+    console.log('Response status:', response.status);
+    
+    // Try to get the response text
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      // If not JSON, check if it's an error message
+      if (!response.ok) {
+        return { success: false, error: `Error ${response.status}: ${response.statusText}` };
       }
-      return { success: false, error: errorMessage };
+      return { success: false, error: 'Server error' };
     }
     
-    const data = await response.json();
-    console.log('API Response:', data);
+    // Check for error in response
+    if (!response.ok || data.error === true) {
+      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+      return { success: false, error: errorMessage };
+    }
     
     return { success: true, data: data };
   } catch (error) {
@@ -43,4 +51,5 @@ export const calculateDuty = async (payload) => {
     return { success: false, error: 'Network error. Please check your connection.' };
   }
 };
+
 export default { calculateDuty };
