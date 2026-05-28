@@ -21,27 +21,21 @@ export const calculateDuty = async (payload) => {
       body: JSON.stringify(payload)
     });
     
-    console.log('Response status:', response.status);
-    
-    // Get raw response text first
-    const text = await response.text();
-    console.log('Raw response:', text);
-    
-    // Try to parse as JSON
-    let data;
-    try {
-      data = JSON.parse(text);
-      console.log('Parsed data:', data);
-    } catch (e) {
-      console.error('Failed to parse JSON:', text);
-      return { success: false, error: 'Server error. Please try again.' };
-    }
-    
-    // Check for error in response
-    if (!response.ok || data.error === true || data.statusCode === 401 || data.statusCode === 404) {
-      const errorMessage = data.message || data.error || `HTTP error! status: ${response.status}`;
+    // If response is not OK (401, 404, etc.)
+    if (!response.ok) {
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const data = await response.json();
+        errorMessage = data.message || data.error || errorMessage;
+      } catch (e) {
+        // If response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+      }
       return { success: false, error: errorMessage };
     }
+    
+    const data = await response.json();
+    console.log('API Response:', data);
     
     return { success: true, data: data };
   } catch (error) {
@@ -49,5 +43,4 @@ export const calculateDuty = async (payload) => {
     return { success: false, error: 'Network error. Please check your connection.' };
   }
 };
-
 export default { calculateDuty };
