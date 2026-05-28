@@ -3,13 +3,11 @@ const API_BASE_URL = 'https://nigeria-energy.duckdns.org/webhook/calculate-duty'
 const getAuthHeaders = () => {
   const headers = { 'Content-Type': 'application/json' };
   const sessionToken = localStorage.getItem('sessionToken');
-  const apiKey = process.env.REACT_APP_API_KEY;
+  ///const apiKey = process.env.REACT_APP_API_KEY;
   
   if (sessionToken) {
     headers['X-Session-Token'] = sessionToken;
-  } else if (apiKey) {
-    headers['X-API-Key'] = apiKey;
-  }
+  } 
   
   return headers;
 };
