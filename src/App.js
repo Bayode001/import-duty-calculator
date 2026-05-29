@@ -10,16 +10,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ResetPassword from './components/ResetPassword'
 import './App.css';
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<YourMainComponent />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -219,9 +209,12 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<YourMainComponent />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
