@@ -6,7 +6,20 @@ import CartSummary from './components/CartSummary';
 import LoginModal from './components/LoginModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { calculateDuty } from './services/api';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ResetPassword from './components/ResetPassword'
 import './App.css';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<YourMainComponent />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
 function AppContent() {
   const { user, logout } = useAuth();
