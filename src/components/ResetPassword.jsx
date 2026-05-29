@@ -9,10 +9,8 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Get token from URL on component mount
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get('token');
-    console.log('Token from URL:', urlToken);
     setToken(urlToken);
   }, []);
 
@@ -21,6 +19,11 @@ const ResetPassword = () => {
     
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
     
@@ -52,51 +55,162 @@ const ResetPassword = () => {
 
   if (!token) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>Invalid Reset Link</h2>
-        <p>The reset link is missing a token. Please request a new password reset.</p>
-        <a href="/">Return to Home</a>
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <h2 style={styles.title}>Invalid Reset Link</h2>
+          <p style={styles.text}>The reset link is missing a token. Please request a new password reset.</p>
+          <a href="/" style={styles.button}>Return to Home</a>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Reset Your Password</h2>
-      <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>Token: {token.substring(0, 10)}...</p>
-      {message && <div style={{ color: 'green', marginBottom: '10px', padding: '10px', background: '#e6ffe6', borderRadius: '4px' }}>{message}</div>}
-      {error && <div style={{ color: 'red', marginBottom: '10px', padding: '10px', background: '#ffe6e6', borderRadius: '4px' }}>{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>New Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '10px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }}
-            required
-          />
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Reset Your Password</h2>
+        <p style={styles.subtitle}>Enter your new password below</p>
+        
+        {message && <div style={styles.successMessage}>{message}</div>}
+        {error && <div style={styles.errorMessage}>{error}</div>}
+        
+        <form onSubmit={handleSubmit}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>New Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+              placeholder="Enter new password"
+              required
+            />
+          </div>
+          
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              style={styles.input}
+              placeholder="Confirm new password"
+              required
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={loading ? styles.buttonDisabled : styles.button}
+          >
+            {loading ? 'Resetting...' : 'Reset Password'}
+          </button>
+        </form>
+        
+        <div style={styles.footer}>
+          <a href="/" style={styles.link}>Back to Login</a>
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            style={{ width: '100%', padding: '10px', marginTop: '5px', border: '1px solid #ccc', borderRadius: '4px' }}
-            required
-          />
-        </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ width: '100%', padding: '12px', background: '#10b981', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </button>
-      </form>
+      </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    padding: '20px'
+  },
+  card: {
+    background: 'white',
+    borderRadius: '16px',
+    padding: '40px',
+    maxWidth: '450px',
+    width: '100%',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+  },
+  title: {
+    margin: '0 0 8px 0',
+    fontSize: '28px',
+    color: '#1e3c72',
+    textAlign: 'center'
+  },
+  subtitle: {
+    margin: '0 0 24px 0',
+    fontSize: '14px',
+    color: '#666',
+    textAlign: 'center'
+  },
+  inputGroup: {
+    marginBottom: '20px'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '8px',
+    fontWeight: '500',
+    color: '#333'
+  },
+  input: {
+    width: '100%',
+    padding: '12px 16px',
+    border: '2px solid #e0e0e0',
+    borderRadius: '8px',
+    fontSize: '16px',
+    transition: 'all 0.3s',
+    boxSizing: 'border-box'
+  },
+  button: {
+    width: '100%',
+    padding: '14px',
+    background: '#10b981',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'background 0.3s'
+  },
+  buttonDisabled: {
+    width: '100%',
+    padding: '14px',
+    background: '#94a3b8',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'not-allowed'
+  },
+  successMessage: {
+    background: '#d1fae5',
+    color: '#065f46',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '20px',
+    textAlign: 'center'
+  },
+  errorMessage: {
+    background: '#fee2e2',
+    color: '#dc2626',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '20px',
+    textAlign: 'center'
+  },
+  footer: {
+    marginTop: '24px',
+    textAlign: 'center'
+  },
+  link: {
+    color: '#10b981',
+    textDecoration: 'none',
+    fontSize: '14px'
+  }
 };
 
 export default ResetPassword;
