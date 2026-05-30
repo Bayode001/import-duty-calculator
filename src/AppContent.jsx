@@ -29,6 +29,7 @@ function AppContent() {
 
   // Save to history
   const saveToHistory = (result) => {
+    console.log('saveToHistory called with:', result);
     if (!result) return;
     
     const historyItem = {
@@ -50,9 +51,12 @@ function AppContent() {
       freight_cost: parseFloat(result.freight_cost || 0),
       insurance_cost: parseFloat(result.insurance_cost || 0)
     };
+
+     console.log('History item being saved:', historyItem);
     
     setHistory(prev => {
       const newHistory = [historyItem, ...prev].slice(0, 50);
+      console.log('New history length:', newHistory.length);
       localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
       return newHistory;
     });
@@ -99,12 +103,17 @@ function AppContent() {
 
   // Single calculator - saves to history
   const handleSingleCalculate = async (payload) => {
-    const result = await handleCalculate(payload);
-    if (result) {
-      saveToHistory(result);
-    }
-    return result;
-  };
+  console.log('handleSingleCalculate called with payload:', payload);
+  const result = await handleCalculate(payload);
+  console.log('handleCalculate result:', result);
+  if (result) {
+    console.log('Saving to history...');
+    saveToHistory(result);
+  } else {
+    console.log('No result to save');
+  }
+  return result;
+};
 
   // Cart functions
   const addToCart = (items) => {
