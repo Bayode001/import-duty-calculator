@@ -4,9 +4,8 @@ import HistoryPanel from './components/HistoryPanel';
 import MultiItemCalculator from './components/MultiItemCalculator';
 import CartSummary from './components/CartSummary';
 import LoginModal from './components/LoginModal';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 import { calculateDuty } from './services/api';
-
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -15,12 +14,12 @@ function AppContent() {
   const [cart, setCart] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
 
+  // Load history from localStorage
   useEffect(() => {
     const savedHistory = localStorage.getItem('dutyHistory');
     if (savedHistory) {
       try {
-        const parsed = JSON.parse(savedHistory);
-        setHistory(Array.isArray(parsed) ? parsed : []);
+        setHistory(JSON.parse(savedHistory));
       } catch (e) {
         console.error('Failed to parse history:', e);
         setHistory([]);
@@ -28,10 +27,9 @@ function AppContent() {
     }
   }, []);
 
+  // Save to history
   const saveToHistory = (result) => {
     if (!result) return;
-    
-    console.log('Saving to history:', result.hs_code, 'Total:', result.total_payable);
     
     const historyItem = {
       ...result,
@@ -54,47 +52,31 @@ function AppContent() {
     };
     
     setHistory(prev => {
-      const recentDuplicate = prev.some(item => 
-        item.hs_code === historyItem.hs_code && 
-        Math.abs(new Date(item.created_at) - new Date(historyItem.created_at)) < 5000
-      );
-      
-      if (recentDuplicate) {
-        console.log('Recent duplicate (within 5 seconds), not saving');
-        return prev;
-      }
-      
       const newHistory = [historyItem, ...prev].slice(0, 50);
       localStorage.setItem('dutyHistory', JSON.stringify(newHistory));
-      console.log('Saved to history, new length:', newHistory.length);
       return newHistory;
     });
   };
 
+  // Load calculation from history
   const loadCalculation = (item) => {
     if (!item) return;
     setActiveTab('calculator');
     setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('loadCalculation', { 
-        detail: item
-      }));
+      window.dispatchEvent(new CustomEvent('loadCalculation', { detail: item }));
     }, 100);
   };
 
+  // Clear history
   const clearHistory = () => {
     setHistory([]);
     localStorage.removeItem('dutyHistory');
-    localStorage.removeItem('savedHistoryKeys');
-    console.log('History cleared');
   };
 
+  // Main calculation function
   const handleCalculate = async (payload) => {
-    console.log('handleCalculate called for:', payload.cetCode);
-    
     try {
       const response = await calculateDuty(payload);
-      console.log('handleCalculate response:', response);
-      
       if (response.success && response.data) {
         const completeResult = {
           ...response.data,
@@ -106,18 +88,16 @@ function AppContent() {
           insurance_cost: payload.insuranceAmount || 0,
           user_id: payload.user_id || null
         };
-        console.log('Returning success result for:', completeResult.hs_code);
         return completeResult;
-      } else {
-        console.log('Response failed for:', payload.cetCode);
-        return null;
       }
+      return null;
     } catch (error) {
       console.error('Error in handleCalculate:', error);
       return null;
     }
   };
 
+  // Single calculator - saves to history
   const handleSingleCalculate = async (payload) => {
     const result = await handleCalculate(payload);
     if (result) {
@@ -126,6 +106,7 @@ function AppContent() {
     return result;
   };
 
+  // Cart functions
   const addToCart = (items) => {
     if (!items || !Array.isArray(items)) return;
     setCart([...cart, ...items]);
@@ -148,7 +129,6 @@ function AppContent() {
           {user ? (
             <div className="user-info">
               <span>👋 {user.name || user.email}</span>
-              <span className="user-tier">{user.tier || 'Free'}</span>
               <button onClick={logout} className="btn-logout">Logout</button>
             </div>
           ) : (
@@ -182,7 +162,12 @@ function AppContent() {
         )}
         
         {activeTab === 'cart' && (
-          <CartSummary cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} onSaveToHistory={saveToHistory} />
+          <CartSummary 
+            cart={cart} 
+            onRemoveItem={removeFromCart} 
+            onClearCart={clearCart} 
+            onSaveToHistory={saveToHistory} 
+          />
         )}
         
         {activeTab === 'history' && (
