@@ -163,7 +163,9 @@ function AppContent() {
       
       <main className="app-main">
         {activeTab === 'calculator' && (
-          <DutyCalculator onCalculate={handleSingleCalculate} />
+          <DutyCalculator onCalculate={handleSingleCalculate}
+            onSaveToHistory={saveToHistory}
+             />
         )}
         
         {activeTab === 'multi' && (
