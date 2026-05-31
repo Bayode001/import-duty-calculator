@@ -137,7 +137,27 @@ const DutyCalculator = ({ onCalculate }) => {
   
   setLoading(false);
 };
-  
+ 
+if (onCalculate) {
+      console.log('Using onCalculate prop');
+      const resultData = await onCalculate(payload);
+      console.log('onCalculate result:', resultData);
+      if (resultData) {
+        setResult(resultData);
+      } else {
+        setError('Calculation failed');
+      }
+    } else {
+      console.log('onCalculate prop is missing!');
+      // fallback to direct API call
+      const response = await calculateDuty(payload);
+      if (response.success) {
+        setResult(response.data);
+      } else {
+        setError(response.error);
+      }
+    }
+
   const handleReset = () => {
     setFormData({
       cetCode: '',

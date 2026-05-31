@@ -103,13 +103,13 @@ function AppContent() {
 
   // Single calculator - saves to history
   const handleSingleCalculate = async (payload) => {
-  //console.log('handleSingleCalculate called with payload:', payload);
+  console.log('handleSingleCalculate called with payload:', payload);
   const result = await handleCalculate(payload);
- // console.log('handleCalculate result:', result);
+  console.log('handleCalculate result:', result);
   if (result) {
-   /// console.log('Saving to history...');
+  console.log('Saving to history...');
     saveToHistory(result);
-//} else {
+} else {
   //  console.log('No result to save');
   }
   return result;
@@ -163,9 +163,7 @@ function AppContent() {
       
       <main className="app-main">
         {activeTab === 'calculator' && (
-          <DutyCalculator onCalculate={handleSingleCalculate}
-            onSaveToHistory={saveToHistory}
-             />
+          <DutyCalculator onCalculate={handleSingleCalculate} />
         )}
         
         {activeTab === 'multi' && (
