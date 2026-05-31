@@ -5,7 +5,7 @@ import LoadingSpinner from './LoadingSpinner';
 import ErrorAlert from './ErrorAlert';
 import HSLookupModal from './HSLookupModal';
 
-const DutyCalculator = ({ onCalculate }) => {
+const DutyCalculator = ({ onCalculate, user }) => {
   const [formData, setFormData] = useState({
     cetCode: '',
     fobAmount: '',
@@ -93,6 +93,14 @@ const DutyCalculator = ({ onCalculate }) => {
 
  const handleSubmit = async (e) => {
   e.preventDefault();
+
+   // ✅ CHECK IF USER IS LOGGED IN FIRST
+    if (!user) {
+      setError('🔒 Please login to use the calculator.');
+      setLoading(false);
+      return;
+    }
+    
   setLoading(true);
   setError(null);
   setResult(null);
@@ -214,6 +222,42 @@ ${'='.repeat(50)}`;
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+
+ // Optional: Add a login prompt banner when user is not logged in
+  if (!user) {
+    return (
+      <div className="calculator-container">
+        <div className="form-panel">
+          <h2>Import Details</h2>
+          <div className="login-prompt" style={{
+            textAlign: 'center',
+            padding: '40px 20px',
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffeeba',
+            borderRadius: '8px',
+            marginTop: '20px'
+          }}>
+            <span style={{ fontSize: '48px' }}>🔒</span>
+            <h3>Login Required</h3>
+            <p>Please login to use the Import Duty Calculator and access your calculation history.</p>
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('openLoginModal'))}
+              className="btn-primary"
+              style={{ marginTop: '15px' }}
+            >
+              Login Now
+            </button>
+          </div>
+        </div>
+        <div className="result-panel">
+          <div className="placeholder">
+            <p>📋 Please login to calculate import duties</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="calculator-container">
@@ -362,5 +406,7 @@ ${'='.repeat(50)}`;
     </div>
   );
 };
+
+
 
 export default DutyCalculator;
