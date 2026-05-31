@@ -91,7 +91,7 @@ const DutyCalculator = ({ onCalculate }) => {
     setError(null);
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError(null);
@@ -120,15 +120,28 @@ const DutyCalculator = ({ onCalculate }) => {
   }
 
   try {
-    const response = await calculateDuty(payload);
-    console.log('Calculation response:', response);
+    let resultData = null;
     
-    if (response.success) {
-      setResult(response.data);
-      setError(null);
+    // Use onCalculate prop if provided (for history saving)
+    if (onCalculate) {
+      console.log('Using onCalculate prop');
+      resultData = await onCalculate(payload);
+      console.log('onCalculate result:', resultData);
+      if (resultData) {
+        setResult(resultData);
+      } else {
+        setError('Calculation failed');
+      }
     } else {
-      // Display the error message from the API
-      setError(response.error || 'Calculation failed. Please try again.');
+      // fallback to direct API call
+      console.log('onCalculate prop is missing, using direct API call');
+      const response = await calculateDuty(payload);
+      if (response.success) {
+        resultData = response.data;
+        setResult(response.data);
+      } else {
+        setError(response.error);
+      }
     }
   } catch (error) {
     console.error('Calculation error:', error);
@@ -137,27 +150,6 @@ const DutyCalculator = ({ onCalculate }) => {
   
   setLoading(false);
 };
- 
-if (onCalculate) {
-      console.log('Using onCalculate prop');
-      const resultData = await onCalculate(payload);
-      console.log('onCalculate result:', resultData);
-      if (resultData) {
-        setResult(resultData);
-      } else {
-        setError('Calculation failed');
-      }
-    } else {
-      console.log('onCalculate prop is missing!');
-      // fallback to direct API call
-      const response = await calculateDuty(payload);
-      if (response.success) {
-        setResult(response.data);
-      } else {
-        setError(response.error);
-      }
-    }
-
   const handleReset = () => {
     setFormData({
       cetCode: '',
