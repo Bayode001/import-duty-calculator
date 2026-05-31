@@ -223,7 +223,6 @@ ${'='.repeat(50)}`;
     URL.revokeObjectURL(url);
   };
 
-
   return (
     <div className="calculator-container">
       <div className="form-panel">

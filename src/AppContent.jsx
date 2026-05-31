@@ -14,15 +14,7 @@ function AppContent() {
   const [cart, setCart] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
 
-
-   // Add event listener for opening login modal from anywhere
-  useEffect(() => {
-    const handleOpenLoginModal = () => setShowLogin(true);
-    window.addEventListener('openLoginModal', handleOpenLoginModal);
-    return () => window.removeEventListener('openLoginModal', handleOpenLoginModal);
-  }, []);
-
-
+  
   // Load history from localStorage
   useEffect(() => {
     const savedHistory = localStorage.getItem('dutyHistory');
