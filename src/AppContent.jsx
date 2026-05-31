@@ -103,14 +103,14 @@ function AppContent() {
 
   // Single calculator - saves to history
   const handleSingleCalculate = async (payload) => {
-  console.log('handleSingleCalculate called with payload:', payload);
+  //console.log('handleSingleCalculate called with payload:', payload);
   const result = await handleCalculate(payload);
-  console.log('handleCalculate result:', result);
+ // console.log('handleCalculate result:', result);
   if (result) {
-    console.log('Saving to history...');
+   /// console.log('Saving to history...');
     saveToHistory(result);
-  } else {
-    console.log('No result to save');
+//} else {
+  //  console.log('No result to save');
   }
   return result;
 };
